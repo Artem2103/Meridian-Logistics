@@ -187,3 +187,7 @@ textarea.field { resize: vertical; min-height: 120px; }
   .hide-sm  { display: none !important; }
   .container { padding: 0 20px; }
 }
+
+.page-fade {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
