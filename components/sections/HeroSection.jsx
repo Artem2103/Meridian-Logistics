@@ -11,13 +11,13 @@ export default function HeroSection() {
       <div className="container" style={{ position: "relative" }}>
 
         {/* Eyebrow */}
-        <div className="animate-fade-up delay-1" style={{ marginBottom: 28 }}>
+        <div className="anim-up d-1" style={{ marginBottom: 28 }}>
           <span className="eyebrow">Global Trade Intelligence Platform</span>
         </div>
 
         {/* Headline */}
-        <div className="animate-fade-up delay-2">
-          <h1 className="text-hero" style={{ maxWidth: 1060, color: "#fff" }}>
+        <div className="anim-up d-2">
+          <h1 className="t-display" style={{ maxWidth: 1060, color: "#fff" }}>
             Do business
             <br />
             <span style={{ WebkitTextStroke: "1.5px #fff", color: "transparent" }}>
@@ -27,7 +27,7 @@ export default function HeroSection() {
         </div>
 
         {/* Sub-row */}
-        <div className="animate-fade-up delay-3" style={{
+        <div className="anim-up d-3" style={{
           display: "flex", justifyContent: "space-between", alignItems: "flex-end",
           marginTop: 56, gap: 40, flexWrap: "wrap",
           borderTop: "1px solid var(--border)", paddingTop: 36,

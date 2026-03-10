@@ -1,27 +1,40 @@
 import { FEATURES } from "@/lib/constants";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export default function FeaturesSection() {
   return (
     <section className="section">
       <div className="container">
+
+        {/* Section header */}
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "flex-end",
           marginBottom: 72, flexWrap: "wrap", gap: 24,
           borderBottom: "1px solid var(--border)", paddingBottom: 40,
         }}>
-          <span className="eyebrow">Platform</span>
-          <h2 className="text-h2" style={{ maxWidth: 560, textAlign: "right" }}>
-            Six capabilities,<br />one platform
-          </h2>
+          <ScrollReveal>
+            <span className="eyebrow">Platform</span>
+          </ScrollReveal>
+          <ScrollReveal delay={1}>
+            <h2 className="text-h2" style={{ maxWidth: 560, textAlign: "right" }}>
+              Six capabilities,<br />one platform
+            </h2>
+          </ScrollReveal>
         </div>
+
+        {/* Feature grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
           {FEATURES.map((f, i) => (
-            <div key={i} style={{
-              padding: "40px 36px",
-              borderRight:  i % 2 === 0 ? "1px solid var(--border)" : "none",
-              borderBottom: i < 4      ? "1px solid var(--border)" : "none",
-              transition: "background 0.2s",
-            }}
+            <ScrollReveal
+              key={i}
+              delay={i % 3}
+              threshold={0.1}
+              style={{
+                padding: "40px 36px",
+                borderRight:  i % 2 === 0 ? "1px solid var(--border)" : "none",
+                borderBottom: i < 4      ? "1px solid var(--border)" : "none",
+                transition: "background 0.2s",
+              }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-1)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
@@ -31,7 +44,7 @@ export default function FeaturesSection() {
                 letterSpacing: "-0.015em", marginBottom: 14, lineHeight: 1.2,
               }}>{f.title}</h3>
               <p className="text-body" style={{ color: "var(--text-2)" }}>{f.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
