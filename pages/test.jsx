@@ -326,7 +326,7 @@ const GRADE_COLOR = {
 ═══════════════════════════════════════════════════════════════ */
 export default function TestPage() {
   const [origin,    setOrigin]    = useState("vietnam");
-  const [dest,      setDest]      = useState("ukraine");
+  const [dest,      setDest]      = useState("japan");
   const [sliderVal, setSliderVal] = useState(50);
   const costWeight = 1 - sliderVal / 100;
 
