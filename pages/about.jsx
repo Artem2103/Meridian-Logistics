@@ -33,7 +33,7 @@ export default function AboutPage() {
                 Built by people who've<br />moved things.
               </h1>
               <p className="text-body-lg anim-up d-3" style={{ color: "var(--text-2)", maxWidth: 560 }}>
-                Meridian was founded in Hanoi in 2020 by a solo founder. I spent years watching cargo fail for predictable reasons — wrong
+                Meridian was founded in Hanoi in 2022 by a solo founder. I spent years watching cargo fail for predictable reasons - wrong
                 routes, missed restrictions, unseen risk. I built the tool people always needed.
               </p>
             </div>
