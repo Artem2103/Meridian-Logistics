@@ -93,7 +93,7 @@ export default function AboutPage() {
                 <p className="text-body" style={{ color: "var(--text-2)" }}>We're hiring across engineering, data science, and trade compliance.</p>
               </div>
               <Link href="/contact" style={{ textDecoration: "none" }}>
-                <button className="btn btn-primary" style={{ padding: "13px 26px", fontSize: 14 }}>View open roles →</button>
+                <button className="btn btn-primary" style={{ padding: "13px 26px", fontSize: 14 }}>Contact us →</button>
               </Link>
             </div>
 
