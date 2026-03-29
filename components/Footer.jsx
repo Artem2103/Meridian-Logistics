@@ -1,19 +1,20 @@
 import Link from "next/link";
-import { COMPANY_NAME, COMPANY_TAGLINE, FOOTER_COLS } from "@/lib/constants";
+import { COMPANY_NAME, COMPANY_EMAIL } from "@/lib/constants";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer style={{ borderTop: "1px solid var(--border)", padding: "72px 28px 40px" }}>
       <div className="container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr 1fr 1fr",
-            gap: 48,
-            marginBottom: 64,
-          }}
-        >
-          {/* ── Brand col ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr 1fr 1fr",
+          gap: 48,
+          marginBottom: 64,
+        }}>
+          {/* Brand col */}
           <div>
             <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
               <div style={{ width: 24, height: 24, background: "#fff", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -30,14 +31,14 @@ export default function Footer() {
             </Link>
 
             <p style={{ fontSize: 13, color: "var(--text-3)", lineHeight: 1.7, maxWidth: 210, marginBottom: 24 }}>
-              {COMPANY_TAGLINE}
+              {t.company.tagline}
             </p>
 
             <SocialLinks />
           </div>
 
-          {/* ── Link cols ── */}
-          {FOOTER_COLS.map((col) => (
+          {/* Link cols */}
+          {t.footerCols.map((col) => (
             <div key={col.title}>
               <p className="text-label" style={{ marginBottom: 18 }}>{col.title}</p>
               <nav style={{ display: "flex", flexDirection: "column", gap: 11 }}>
@@ -62,22 +63,20 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* ── Bottom bar ── */}
-        <div
-          style={{
-            borderTop: "1px solid var(--border)",
-            paddingTop: 24,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 12,
-          }}
-        >
+        {/* Bottom bar */}
+        <div style={{
+          borderTop: "1px solid var(--border)",
+          paddingTop: 24,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 12,
+        }}>
           <span style={{ fontSize: 12, color: "var(--text-4)" }}>
-            © {new Date().getFullYear()} {COMPANY_NAME} Technologies, Inc. All rights reserved.
+            © {new Date().getFullYear()} {COMPANY_NAME} Technologies, Inc. {t.company.copyright}
           </span>
-          <StatusIndicator />
+          <StatusIndicator label={t.company.allSystemsOperational} />
         </div>
       </div>
     </footer>
@@ -90,7 +89,6 @@ function SocialLinks() {
     { label: "in", href: "#" },
     { label: "gh", href: "#" },
   ];
-
   return (
     <div style={{ display: "flex", gap: 8 }}>
       {socials.map(({ label, href }) => (
@@ -100,16 +98,11 @@ function SocialLinks() {
           target="_blank"
           rel="noreferrer"
           style={{
-            width: 30,
-            height: 30,
+            width: 30, height: 30,
             border: "1px solid var(--border)",
             borderRadius: "var(--radius-sm)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 11,
-            color: "var(--text-3)",
-            textDecoration: "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 11, color: "var(--text-3)", textDecoration: "none",
             transition: "all 0.18s",
           }}
           onMouseEnter={(e) => {
@@ -128,11 +121,11 @@ function SocialLinks() {
   );
 }
 
-function StatusIndicator() {
+function StatusIndicator({ label }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80" }} />
-      <span className="text-label" style={{ fontSize: 10 }}>All systems operational</span>
+      <span className="text-label" style={{ fontSize: 10 }}>{label}</span>
     </div>
   );
 }

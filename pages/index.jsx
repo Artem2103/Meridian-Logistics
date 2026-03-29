@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/sections/HeroSection";
@@ -6,8 +7,7 @@ import CTASection from "@/components/sections/CTASection";
 import LogoMarquee from "@/components/ui/LogoMarquee";
 import Timeline from "@/components/ui/Timeline";
 import TradeRouteMap from "@/components/sections/TradeRouteMap";
-import Link from "next/link";
-import { TIMELINE_ITEMS, STATS } from "@/lib/constants";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function HomePage() {
   return (
@@ -30,12 +30,15 @@ export default function HomePage() {
 }
 
 function DepartmentStrip() {
+  const { t } = useLanguage();
+  const ds = t.deptStrip;
+
   const cards = [
     {
       href: "/logistics",
-      label: "Logistics",
-      tag: "Route Intelligence",
-      desc: "AI-optimised routing across 160+ countries. Product-aware corridor filtering, live port data, and multi-modal comparison — so your cargo always takes the right path.",
+      tag:  ds.logistics.tag,
+      label: ds.logistics.label,
+      desc:  ds.logistics.desc,
       icon: (
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
           <path d="M3 21L9 9L15 16L20 11L25 21" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -46,9 +49,9 @@ function DepartmentStrip() {
     },
     {
       href: "/systems",
-      label: "Systems",
-      tag: "Business Analytics",
-      desc: "Full landed-cost modelling, tariff intelligence, and supplier country analysis. Know exactly what a trade lane will cost before you commit a single dollar.",
+      tag:  ds.systems.tag,
+      label: ds.systems.label,
+      desc:  ds.systems.desc,
       icon: (
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
           <rect x="3"  y="3"  width="9" height="9" stroke="#fff" strokeWidth="1.8"/>
@@ -60,9 +63,9 @@ function DepartmentStrip() {
     },
     {
       href: "/securities",
-      label: "Securities",
-      tag: "Risk & Compliance",
-      desc: "Sanctions screening, geopolitical risk scoring, and AI-generated contract recommendations. Identify exposure before it becomes a crisis.",
+      tag:  ds.securities.tag,
+      label: ds.securities.label,
+      desc:  ds.securities.desc,
       icon: (
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
           <path d="M14 3L25 7.5V15C25 21 20 25.5 14 27C8 25.5 3 21 3 15V7.5L14 3Z" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round"/>
@@ -99,7 +102,7 @@ function DepartmentStrip() {
               }}>{c.label}</h3>
               <p className="text-body" style={{ color: "var(--text-2)", lineHeight: 1.75 }}>{c.desc}</p>
               <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 13, color: "var(--text-3)", fontFamily: "var(--font-body)" }}>Learn more</span>
+                <span style={{ fontSize: 13, color: "var(--text-3)", fontFamily: "var(--font-body)" }}>{ds.learnMore}</span>
                 <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
                   <path d="M2 5.5H9M6.5 3L9 5.5L6.5 8" stroke="var(--text-3)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -113,28 +116,33 @@ function DepartmentStrip() {
 }
 
 function TimelineSection() {
+  const { t } = useLanguage();
+  const s = t.story;
   return (
     <section className="section" style={{ background: "var(--bg-1)", borderTop: "1px solid var(--border)" }}>
       <div className="container">
         <div style={{ marginBottom: 72, borderBottom: "1px solid var(--border)", paddingBottom: 40 }}>
-          <span className="eyebrow">Story</span>
+          <span className="eyebrow">{s.eyebrow}</span>
           <h2 className="text-h2" style={{ marginTop: 20 }}>
-            Built by people who've<br />shipped things.
+            {s.h2.split("\n").map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
           </h2>
         </div>
-        <Timeline items={TIMELINE_ITEMS} />
+        <Timeline items={s.items} />
       </div>
     </section>
   );
 }
 
 function StatsBanner() {
+  const { t } = useLanguage();
   return (
     <div style={{
       borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
       display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
     }}>
-      {STATS.map(({ value, label }, i) => (
+      {t.stats.map(({ value, label }, i) => (
         <div key={i} style={{
           padding: "52px 40px", textAlign: "center",
           borderRight: i < 3 ? "1px solid var(--border)" : "none",

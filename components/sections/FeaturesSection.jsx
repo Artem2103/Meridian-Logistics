@@ -1,50 +1,42 @@
-import { FEATURES } from "@/lib/constants";
-import ScrollReveal from "@/components/ui/ScrollReveal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function FeaturesSection() {
+  const { t } = useLanguage();
+  const f = t.features;
+
   return (
     <section className="section">
       <div className="container">
-
-        {/* Section header */}
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "flex-end",
           marginBottom: 72, flexWrap: "wrap", gap: 24,
           borderBottom: "1px solid var(--border)", paddingBottom: 40,
         }}>
-          <ScrollReveal>
-            <span className="eyebrow">Platform</span>
-          </ScrollReveal>
-          <ScrollReveal delay={1}>
-            <h2 className="text-h2" style={{ maxWidth: 560, textAlign: "right" }}>
-              Six capabilities,<br />one platform
-            </h2>
-          </ScrollReveal>
+          <span className="eyebrow">{f.eyebrow}</span>
+          <h2 className="text-h2" style={{ maxWidth: 560, textAlign: "right" }}>
+            {f.h2.split("\n").map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
+          </h2>
         </div>
-
-        {/* Feature grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
-          {FEATURES.map((f, i) => (
-            <ScrollReveal
-              key={i}
-              delay={i % 3}
-              threshold={0.1}
-              style={{
-                padding: "40px 36px",
-                borderRight:  i % 2 === 0 ? "1px solid var(--border)" : "none",
-                borderBottom: i < 4      ? "1px solid var(--border)" : "none",
-                transition: "background 0.2s",
-              }}
+          {f.items.map((feat, i) => (
+            <div key={i} style={{
+              padding: "40px 36px",
+              borderRight:  i % 2 === 0 ? "1px solid var(--border)" : "none",
+              borderBottom: i < 4      ? "1px solid var(--border)" : "none",
+              transition: "background 0.2s",
+            }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-1)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <p className="text-label" style={{ marginBottom: 20 }}>{f.num}</p>
+              <p className="text-label" style={{ marginBottom: 20 }}>{feat.num}</p>
               <h3 style={{
                 fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700,
                 letterSpacing: "-0.015em", marginBottom: 14, lineHeight: 1.2,
-              }}>{f.title}</h3>
-              <p className="text-body" style={{ color: "var(--text-2)" }}>{f.desc}</p>
-            </ScrollReveal>
+              }}>{feat.title}</h3>
+              <p className="text-body" style={{ color: "var(--text-2)" }}>{feat.desc}</p>
+            </div>
           ))}
         </div>
       </div>

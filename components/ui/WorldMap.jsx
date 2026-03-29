@@ -5,19 +5,8 @@ import Image from "next/image";
 
 /**
  * WorldMap — animated trade route visualisation.
- * Adapted from 21st.dev aceternity/world-map for Pages Router (no "use client",
- * no Tailwind, inline styles throughout).
- *
- * @param {{
- *   dots?: Array<{
- *     start: { lat: number, lng: number, label?: string },
- *     end:   { lat: number, lng: number, label?: string }
- *   }>,
- *   lineColor?: string,
- *   showLabels?: boolean,
- *   animationDuration?: number,
- *   loop?: boolean
- * }} props
+ * Fixed: animated circles now have keys derived from coordinates so
+ * they fully remount (and reset) when the dots prop changes.
  */
 export function WorldMap({
   dots = [],
@@ -29,7 +18,6 @@ export function WorldMap({
   const svgRef = useRef(null);
   const [hoveredLocation, setHoveredLocation] = useState(null);
 
-  // Build the dotted map SVG once
   const map = useMemo(() => new DottedMap({ height: 100, grid: "diagonal" }), []);
 
   const svgMap = useMemo(
@@ -38,18 +26,14 @@ export function WorldMap({
         radius: 0.22,
         color: "white",
         shape: "circle",
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(35, 35, 35, 0.03)",
       }),
     [map]
   );
 
-  // We project onto a 800×400 equirectangular viewport
-  const W = 800;
-  const H = 400;
-
   const projectPoint = (lat, lng) => ({
-    x: (lng + 180) * (W / 360),
-    y: (90 - lat)  * (H / 180),
+    x: (lng + 180) * (800 / 360),
+    y: (90 - lat)  * (400 / 180),
   });
 
   const createCurvedPath = (start, end) => {
@@ -63,40 +47,42 @@ export function WorldMap({
   const pauseTime          = 2;
   const fullCycleDuration  = totalAnimationTime + pauseTime;
 
+  // Create a stable key for a dot based on its coordinates
+  const dotKey = (dot, i) =>
+    `${i}-${dot.start.lat.toFixed(3)}-${dot.start.lng.toFixed(3)}-${dot.end.lat.toFixed(3)}-${dot.end.lng.toFixed(3)}`;
+
   return (
     <div style={{
       width: "100%",
       aspectRatio: "2 / 1",
-      background: "transparent",
+      background: "rgba(35, 35, 35, 0.03)",
       borderRadius: 4,
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Dotted base map — fill mode so it aligns with the SVG projection exactly */}
+      {/* Dotted base map */}
       <Image
         src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
         style={{
-          position: "absolute",
-          inset: 0,
           width: "100%",
           height: "100%",
-          objectFit: "fill",   // ← was "cover"; fill prevents any crop/shift
+          objectFit: "cover",
           userSelect: "none",
           pointerEvents: "none",
           maskImage: "linear-gradient(to bottom, transparent, white 10%, white 90%, transparent)",
           WebkitMaskImage: "linear-gradient(to bottom, transparent, white 10%, white 90%, transparent)",
         }}
         alt="world map"
-        height={H}
-        width={W}
+        height={495}
+        width={1056}
         draggable={false}
         priority
       />
 
-      {/* Animated route SVG — exact same viewport */}
+      {/* Animated route SVG */}
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox="0 0 800 400"
         style={{
           width: "100%",
           height: "100%",
@@ -128,13 +114,19 @@ export function WorldMap({
           const s     = projectPoint(dot.start.lat, dot.start.lng);
           const e     = projectPoint(dot.end.lat,   dot.end.lng);
           const pathD = createCurvedPath(s, e);
+
           const startTime  = (i * staggerDelay) / fullCycleDuration;
           const endTime    = (i * staggerDelay + animationDuration) / fullCycleDuration;
           const resetTime  = totalAnimationTime / fullCycleDuration;
 
+          // KEY on dot coordinates — forces full remount when routes change
+          const key = dotKey(dot, i);
+
           return (
-            <g key={`path-group-${i}`}>
+            <g key={`path-group-${key}`}>
               <motion.path
+                // KEY here too so framer-motion treats it as a new element
+                key={`path-${key}`}
                 d={pathD}
                 fill="none"
                 stroke="url(#path-gradient)"
@@ -145,12 +137,18 @@ export function WorldMap({
                   : { pathLength: 1 }
                 }
                 transition={loop
-                  ? { duration: fullCycleDuration, times: [0, startTime, endTime, resetTime, 1], ease: "easeInOut", repeat: Infinity }
+                  ? {
+                      duration: fullCycleDuration,
+                      times: [0, startTime, endTime, resetTime, 1],
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                    }
                   : { duration: animationDuration, delay: i * staggerDelay, ease: "easeInOut" }
                 }
               />
               {loop && (
                 <motion.circle
+                  key={`circle-${key}`}
                   r="3"
                   fill={lineColor}
                   filter="url(#glow)"
@@ -174,17 +172,19 @@ export function WorldMap({
 
         {/* ── Dots & labels ── */}
         {dots.map((dot, i) => {
-          const s = projectPoint(dot.start.lat, dot.start.lng);
-          const e = projectPoint(dot.end.lat,   dot.end.lng);
+          const s   = projectPoint(dot.start.lat, dot.start.lng);
+          const e   = projectPoint(dot.end.lat,   dot.end.lng);
+          const key = dotKey(dot, i);
 
           return (
-            <g key={`points-group-${i}`}>
+            <g key={`points-group-${key}`}>
               {[
                 { pt: s, label: dot.start.label, delay: i * 0.5 + 0.3 },
                 { pt: e, label: dot.end.label,   delay: i * 0.5 + 0.5 },
               ].map(({ pt, label, delay }, j) => (
-                <g key={j}>
+                <g key={`${key}-pt-${j}`}>
                   <motion.g
+                    key={`${key}-hover-${j}`}
                     onHoverStart={() => setHoveredLocation(label || null)}
                     onHoverEnd={() => setHoveredLocation(null)}
                     style={{ cursor: "pointer" }}
@@ -193,13 +193,24 @@ export function WorldMap({
                   >
                     <circle cx={pt.x} cy={pt.y} r="3" fill={lineColor} filter="url(#glow)" />
                     <circle cx={pt.x} cy={pt.y} r="3" fill={lineColor} opacity="0.4">
-                      <animate attributeName="r"       from="3"  to="12" dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.5" to="0"  dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
+                      <animate
+                        attributeName="r"
+                        from="3" to="12" dur="2s"
+                        begin={`${j * 0.5}s`}
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        from="0.5" to="0" dur="2s"
+                        begin={`${j * 0.5}s`}
+                        repeatCount="indefinite"
+                      />
                     </circle>
                   </motion.g>
 
                   {showLabels && label && (
                     <motion.g
+                      key={`${key}-label-${j}`}
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay, duration: 0.5 }}

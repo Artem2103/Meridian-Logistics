@@ -1,6 +1,13 @@
 import "@/styles/globals.css";
-import "mapbox-gl/dist/mapbox-gl.css";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    </LanguageProvider>
+  );
 }
