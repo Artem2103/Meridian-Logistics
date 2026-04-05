@@ -15,30 +15,22 @@ export default function SecuritiesPage() {
           sub="Meridian Securities monitors sanctions lists, geopolitical signals, and corridor risk in real time — and tells you exactly what to do about it, before your shipment is in the air."
           cta={{ label: "Start free trial", href: "/get-started" }}
           ctaSecondary={{ label: "Talk to sales", href: "/contact" }}
-          /*
-           * ── MEDIA ──────────────────────────────────────────────
-           * mediaSrc={{ image: "YOUR_IMAGE_URL" }}
-           * mediaSrc={{ video: "YOUR_VIDEO_URL" }}
-           */
-          mediaSrc={{ image: "https://www.shutterstock.com/image-illustration/elegant-abstract-smooth-black-background-600nw-2686662953.jpg"}}
         />
 
-        {/* Risk callout */}
         <div style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--bg-1)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 28px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 28px" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
               <div>
                 <span className="eyebrow" style={{ marginBottom: 20, display: "flex" }}>Why it matters</span>
                 <h2 className="text-h2" style={{ marginBottom: 24 }}>
-                  One corridor decision
-                  <br />can cost everything.
+                  One corridor decision<br />can cost everything.
                 </h2>
-                <p className="text-body-lg" style={{ color: "var(--text-2)", marginBottom: 24 }}>
+                <p className="text-body-lg" style={{ marginBottom: 24 }}>
                   Sanctions violations, cargo seizures, and force majeure events are rarely
                   surprises — they're predictable risks that weren't flagged in time.
                   Meridian Securities changes that.
                 </p>
-                <p className="text-body" style={{ color: "var(--text-3)", lineHeight: 1.8 }}>
+                <p style={{ fontSize: 13, color: "var(--text-3)", lineHeight: 1.8 }}>
                   We screen every counterparty, every transit point, and every trade document
                   against live sanctions lists and geopolitical risk scores — then recommend
                   the protective instruments your lawyers would suggest.
@@ -63,36 +55,66 @@ export default function SecuritiesPage() {
 
 function RiskMockup() {
   const alerts = [
-    { level: "HIGH",   color: "#ef4444", label: "Iran transit detected", action: "Reroute — OFAC exposure" },
-    { level: "MEDIUM", color: "#f59e0b", label: "Port congestion: Felixstowe", action: "7-day delay likely" },
-    { level: "LOW",    color: "#22c55e", label: "New FTA: UK-India",     action: "0% duty eligible" },
-    { level: "INFO",   color: "#6b7280", label: "Document required",    action: "EUR1 certificate needed" },
+    { level: "HIGH",   color: "#ef4444", label: "Iran transit detected",      action: "Reroute — OFAC exposure" },
+    { level: "MED",    color: "#f59e0b", label: "Port congestion: Felixstowe",action: "7-day delay likely" },
+    { level: "LOW",    color: "#4ade80", label: "New FTA: UK–India",           action: "0% duty eligible" },
+    { level: "INFO",   color: "#60a5fa", label: "Document required",           action: "EUR1 certificate needed" },
   ];
 
   return (
     <div style={{
-      background: "var(--bg-2)", border: "1px solid var(--border)",
-      borderRadius: "var(--radius-sm)", padding: "36px",
+      background: "var(--panel-bg)",
+      border: "1px solid var(--panel-border)",
+      borderRadius: "var(--radius-md)",
+      overflow: "hidden",
+      boxShadow: "var(--shadow-lg)",
     }}>
-      <p className="text-label" style={{ marginBottom: 20 }}>Live risk alerts — Active shipments</p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {alerts.map((a, i) => (
-          <div key={i} style={{
-            display: "flex", gap: 14, alignItems: "flex-start",
-            background: "var(--bg-1)", border: "1px solid var(--border)",
-            borderRadius: "var(--radius-sm)", padding: "14px 16px",
-            borderLeft: `3px solid ${a.color}`,
-          }}>
-            <span style={{
-              fontSize: 9, fontWeight: 700, letterSpacing: "0.1em",
-              color: a.color, whiteSpace: "nowrap", paddingTop: 2,
-            }}>{a.level}</span>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 500, color: "#fff", marginBottom: 2 }}>{a.label}</p>
-              <p style={{ fontSize: 12, color: "var(--text-3)" }}>{a.action}</p>
+      <div style={{
+        padding: "12px 16px",
+        borderBottom: "1px solid var(--panel-border)",
+        background: "var(--panel-1)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {["#ef4444","#f59e0b","#22c55e"].map((c, i) => (
+            <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: c, opacity: 0.8 }}/>
+          ))}
+          <span style={{ marginLeft: 8, fontFamily: "monospace", fontSize: 9, color: "var(--panel-text-3)", letterSpacing: "0.06em" }}>Active shipments · risk-feed</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#4ade80", animation: "blink 1.5s ease-in-out infinite" }}/>
+          <span style={{ fontSize: 9, color: "#4ade80", letterSpacing: "0.08em" }}>LIVE</span>
+        </div>
+      </div>
+
+      <div style={{ padding: "20px" }}>
+        <div style={{ fontSize: 9, letterSpacing: "0.14em", color: "var(--panel-text-3)", marginBottom: 14 }}>LIVE RISK ALERTS</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {alerts.map((a, i) => (
+            <div key={i} style={{
+              display: "flex", gap: 12, alignItems: "flex-start",
+              background: "var(--panel-2)",
+              border: "1px solid var(--panel-border)",
+              borderLeft: `3px solid ${a.color}`,
+              borderRadius: "0 var(--radius-sm) var(--radius-sm) 0",
+              padding: "12px 14px",
+            }}>
+              <span style={{
+                fontSize: 8, fontWeight: 700, letterSpacing: "0.1em",
+                color: a.color, whiteSpace: "nowrap", paddingTop: 2,
+                width: 28, textAlign: "right",
+              }}>{a.level}</span>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 600, color: "var(--panel-text)", marginBottom: 3 }}>{a.label}</p>
+                <p style={{ fontSize: 10, color: "var(--panel-text-2)" }}>{a.action}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div style={{ marginTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 9, color: "var(--panel-text-3)", letterSpacing: "0.06em" }}>47 signals today · 3 active alerts</span>
+          <span style={{ fontSize: 9, padding: "2px 8px", background: "rgba(239,68,68,0.15)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 2 }}>ACTION REQUIRED</span>
+        </div>
       </div>
     </div>
   );
@@ -128,21 +150,20 @@ function RiskExamples() {
           {examples.map((ex, i) => (
             <div key={i} style={{
               display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 0,
               borderBottom: i < examples.length - 1 ? "1px solid var(--border)" : "none",
               padding: "36px 0",
             }}>
               <div style={{ paddingRight: 40, borderRight: "1px solid var(--border)" }}>
                 <p className="text-label" style={{ marginBottom: 10 }}>Scenario</p>
-                <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.scenario}</p>
+                <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.scenario}</p>
               </div>
               <div style={{ padding: "0 40px", borderRight: "1px solid var(--border)" }}>
                 <p className="text-label" style={{ marginBottom: 10 }}>Risk identified</p>
-                <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.risk}</p>
+                <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.risk}</p>
               </div>
               <div style={{ paddingLeft: 40 }}>
                 <p className="text-label" style={{ marginBottom: 10 }}>Meridian's action</p>
-                <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.action}</p>
+                <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.action}</p>
               </div>
             </div>
           ))}

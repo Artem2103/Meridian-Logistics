@@ -4,42 +4,33 @@ export default function LogoMarquee() {
   const items = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
 
   return (
-    <div
-      style={{
-        borderTop: "1px solid var(--border)",
-        borderBottom: "1px solid var(--border)",
-        padding: "18px 0",
-        overflow: "hidden",
-        position: "relative",
-        background: "#fff",
-      }}
-    >
+    <div style={{
+      borderTop: "1px solid var(--border)",
+      borderBottom: "1px solid var(--border)",
+      padding: "18px 0",
+      overflow: "hidden",
+      position: "relative",
+      background: "var(--bg-1)",
+    }}>
       {/* Fade masks */}
-      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 120, background: "linear-gradient(to right, #fff, transparent)", zIndex: 2, pointerEvents: "none" }} />
-      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 120, background: "linear-gradient(to left, #fff, transparent)", zIndex: 2, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 140, background: "linear-gradient(to right, var(--bg-1), transparent)", zIndex: 2, pointerEvents: "none" }} />
+      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 140, background: "linear-gradient(to left, var(--bg-1), transparent)", zIndex: 2, pointerEvents: "none" }} />
 
       <div className="marquee-track">
         {items.map((name, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0 52px",
-              borderRight: "1px solid var(--border)",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-                fontSize: 14,
-                letterSpacing: "-0.01em",
-                color: "var(--text-4)",
-                whiteSpace: "nowrap",
-                transition: "color 0.2s",
-              }}
-            >
+          <div key={i} style={{
+            display: "flex", alignItems: "center",
+            padding: "0 52px",
+            borderRight: "1px solid var(--border)",
+          }}>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 700, fontSize: 14,
+              letterSpacing: "-0.01em",
+              color: "var(--text-4)",
+              whiteSpace: "nowrap",
+              transition: "color 0.2s",
+            }}>
               {name}
             </span>
           </div>

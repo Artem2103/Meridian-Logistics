@@ -14,76 +14,86 @@ export default function TradeRouteMap({ variant = "home" }) {
 
   return (
     <section style={{
-      background: "#fff",
-      borderTop: "1px solid var(--border)",
-      borderBottom: "1px solid var(--border)",
+      background: "var(--panel-bg)",
+      borderTop: "1px solid var(--panel-border)",
+      borderBottom: "1px solid var(--panel-border)",
       padding: isHome ? "100px 28px" : "72px 28px",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-
         {/* Header */}
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "flex-end",
           marginBottom: 56, flexWrap: "wrap", gap: 24,
-          borderBottom: "1px solid var(--border)", paddingBottom: 40,
+          borderBottom: "1px solid var(--panel-border)", paddingBottom: 40,
         }}>
           <div>
-            <span className="eyebrow" style={{ marginBottom: 16, display: "flex" }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 12,
+              fontFamily: "var(--font-body)", fontSize: 10, fontWeight: 500,
+              letterSpacing: "0.2em", textTransform: "uppercase",
+              color: "var(--panel-text-3)", marginBottom: 16,
+            }}>
+              <span style={{ width: 20, height: 1, background: "var(--panel-border)", flexShrink: 0 }}/>
               {isHome ? "Global Coverage" : "Active Trade Lanes"}
             </span>
-            <h2 className="text-h2" style={{ color: "var(--text)" }}>
-              {isHome
-                ? <>160+ countries.<br />Every corridor mapped.</>
-                : <>Route intelligence<br />across every lane.</>
-              }
+            <h2 style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(24px, 3.2vw, 44px)",
+              fontWeight: 700, lineHeight: 1.08,
+              letterSpacing: "-0.022em",
+              color: "var(--panel-text)",
+            }}>
+              {isHome ? <>160+ countries.<br />Every corridor mapped.</> : <>Route intelligence<br />across every lane.</>}
             </h2>
           </div>
-          <p className="text-body-lg" style={{
-            color: "var(--text-2)", maxWidth: 380,
+          <p style={{
+            fontSize: 15, fontWeight: 300, lineHeight: 1.8,
+            color: "var(--panel-text-2)", maxWidth: 380,
             textAlign: isHome ? "right" : "left",
           }}>
             {isHome
-              ? "Meridian covers every major trade lane on earth — from high-volume container routes to narrow-gauge emerging market corridors."
+              ? "Meridian covers every major trade lane on earth. If cargo moves there, we model it."
               : "Every route is scored in real time against port conditions, commodity restrictions, sanctions exposure, and carrier performance."
             }
           </p>
         </div>
 
         {/* Map */}
-        <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
-          <WorldMap
-            dots={TRADE_ROUTES}
-            lineColor="#1A3A5C"
-            showLabels={true}
-            animationDuration={2.5}
-            loop={true}
-          />
-        </div>
+        <WorldMap
+          dots={TRADE_ROUTES}
+          lineColor="#4ade80"
+          showLabels={true}
+          animationDuration={2.5}
+          loop={true}
+        />
 
         {/* Stats */}
         <div style={{
           display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-          marginTop: 1, borderTop: "1px solid var(--border)",
-          background: "var(--bg-1)",
+          marginTop: 1, borderTop: "1px solid var(--panel-border)",
         }}>
           {[
-            { value: "160+",   label: "Countries"            },
-            { value: "2,400+", label: "Trade corridors"      },
-            { value: "3,200+", label: "Ports monitored"      },
+            { value: "160+",   label: "Countries" },
+            { value: "2,400+", label: "Trade corridors" },
+            { value: "3,200+", label: "Ports monitored" },
             { value: "800+",   label: "Carriers benchmarked" },
           ].map(({ value, label }, i) => (
             <div key={i} style={{
               padding: "32px 24px", textAlign: "center",
-              borderRight: i < 3 ? "1px solid var(--border)" : "none",
+              borderRight: i < 3 ? "1px solid var(--panel-border)" : "none",
             }}>
               <div style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(22px, 3vw, 36px)",
+                fontSize: "clamp(22px, 2.8vw, 36px)",
                 fontWeight: 800, letterSpacing: "-0.025em",
                 lineHeight: 1, marginBottom: 6,
-                color: "var(--accent)",
+                color: "var(--panel-text)",
               }}>{value}</div>
-              <p className="text-label" style={{ fontSize: 10 }}>{label}</p>
+              <p style={{
+                fontFamily: "var(--font-body)", fontSize: 10, fontWeight: 500,
+                letterSpacing: "0.18em", textTransform: "uppercase",
+                color: "var(--panel-text-3)",
+              }}>{label}</p>
             </div>
           ))}
         </div>

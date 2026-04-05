@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export function WorldMap({
   dots = [],
-  lineColor = "#1A3A5C",
+  lineColor = "#4ade80",
   showLabels = true,
   animationDuration = 2,
   loop = true,
@@ -19,7 +19,7 @@ export function WorldMap({
     () =>
       map.getSVG({
         radius: 0.22,
-        color: "#B8B4AB",
+        color: "#2a2d40",   // subtle dark dots on dark bg
         shape: "circle",
         backgroundColor: "transparent",
       }),
@@ -44,16 +44,21 @@ export function WorldMap({
 
   return (
     <div style={{
-      width: "100%", aspectRatio: "2 / 1",
-      background: "var(--bg-1)",
-      position: "relative", overflow: "hidden",
+      width: "100%",
+      aspectRatio: "2 / 1",
+      background: "transparent",
+      borderRadius: 4,
+      position: "relative",
+      overflow: "hidden",
     }}>
       {/* Dotted base map */}
       <Image
         src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
         style={{
-          width: "100%", height: "100%", objectFit: "cover",
+          width: "100%", height: "100%",
+          objectFit: "cover",
           userSelect: "none", pointerEvents: "none",
+          opacity: 0.6,
           maskImage: "linear-gradient(to bottom, transparent, white 10%, white 90%, transparent)",
           WebkitMaskImage: "linear-gradient(to bottom, transparent, white 10%, white 90%, transparent)",
         }}
@@ -62,7 +67,7 @@ export function WorldMap({
         draggable={false} priority
       />
 
-      {/* Animated route SVG */}
+      {/* Route SVG */}
       <svg
         ref={svgRef}
         viewBox="0 0 800 400"
@@ -78,7 +83,7 @@ export function WorldMap({
           </linearGradient>
           <filter id="glow">
             <feMorphology operator="dilate" radius="0.5" />
-            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+            <feGaussianBlur stdDeviation="1.8" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
@@ -101,7 +106,10 @@ export function WorldMap({
                 d={pathD} fill="none"
                 stroke="url(#path-gradient)" strokeWidth="1.2"
                 initial={{ pathLength: 0 }}
-                animate={loop ? { pathLength: [0, 0, 1, 1, 0] } : { pathLength: 1 }}
+                animate={loop
+                  ? { pathLength: [0, 0, 1, 1, 0] }
+                  : { pathLength: 1 }
+                }
                 transition={loop
                   ? { duration: fullCycleDuration, times: [0, startTime, endTime, resetTime, 1], ease: "easeInOut", repeat: Infinity }
                   : { duration: animationDuration, delay: i * staggerDelay, ease: "easeInOut" }
@@ -109,11 +117,11 @@ export function WorldMap({
               />
               {loop && (
                 <motion.circle
-                  r="3" fill={lineColor} filter="url(#glow)"
+                  r="3.5" fill={lineColor} filter="url(#glow)"
                   initial={{ offsetDistance: "0%", opacity: 0 }}
                   animate={{
                     offsetDistance: [null, "0%", "100%", "100%", "100%"],
-                    opacity:        [0,    0,     1,      0,       0    ],
+                    opacity:        [0,    0,     1,      0,      0    ],
                   }}
                   transition={{
                     duration: fullCycleDuration,
@@ -134,8 +142,9 @@ export function WorldMap({
 
           return (
             <g key={`points-group-${i}`}>
-              {[{ pt: s, label: dot.start.label, delay: i * 0.5 + 0.3 },
-                { pt: e, label: dot.end.label,   delay: i * 0.5 + 0.5 }
+              {[
+                { pt: s, label: dot.start.label, delay: i * 0.5 + 0.3 },
+                { pt: e, label: dot.end.label,   delay: i * 0.5 + 0.5 },
               ].map(({ pt, label, delay }, j) => (
                 <g key={j}>
                   <motion.g
@@ -145,10 +154,10 @@ export function WorldMap({
                     whileHover={{ scale: 1.3 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    <circle cx={pt.x} cy={pt.y} r="3" fill={lineColor} filter="url(#glow)" />
-                    <circle cx={pt.x} cy={pt.y} r="3" fill={lineColor} opacity="0.3">
-                      <animate attributeName="r"       from="3"   to="10" dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.4" to="0"  dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
+                    <circle cx={pt.x} cy={pt.y} r="3.5" fill={lineColor} filter="url(#glow)"/>
+                    <circle cx={pt.x} cy={pt.y} r="3.5" fill={lineColor} opacity="0.35">
+                      <animate attributeName="r"       from="3.5" to="13" dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
+                      <animate attributeName="opacity" from="0.5" to="0"  dur="2s" begin={`${j * 0.5}s`} repeatCount="indefinite" />
                     </circle>
                   </motion.g>
 
@@ -162,13 +171,13 @@ export function WorldMap({
                       <foreignObject x={pt.x - 44} y={pt.y - 34} width="88" height="26">
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                           <span style={{
-                            fontFamily: "var(--font-body)",
-                            fontSize: 9, fontWeight: 700,
-                            letterSpacing: "0.06em", textTransform: "uppercase",
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 9, fontWeight: 600,
+                            letterSpacing: "0.04em",
                             padding: "2px 8px",
-                            background: "rgba(247,245,240,0.92)",
-                            color: "var(--accent)",
-                            border: "1px solid var(--border)",
+                            background: "rgba(12, 13, 20, 0.9)",
+                            color: "#fff",
+                            border: "1px solid rgba(74, 222, 128, 0.3)",
                             borderRadius: 3,
                             whiteSpace: "nowrap",
                           }}>
@@ -194,9 +203,13 @@ export function WorldMap({
             exit={{ opacity: 0, y: 10 }}
             style={{
               position: "absolute", bottom: 16, left: 16,
-              background: "var(--accent)", color: "#fff",
-              padding: "8px 14px", borderRadius: 4,
-              fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 600,
+              background: "rgba(12, 13, 20, 0.9)",
+              color: "#4ade80",
+              padding: "8px 14px",
+              borderRadius: 4, fontSize: 12,
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+              border: "1px solid rgba(74, 222, 128, 0.3)",
+              backdropFilter: "blur(8px)",
             }}
           >
             {hoveredLocation}

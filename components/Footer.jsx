@@ -15,7 +15,7 @@ export default function Footer() {
           gap: 48,
           marginBottom: 64,
         }}>
-          {/* Brand col */}
+          {/* Brand */}
           <div>
             <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
               <div style={{
@@ -25,15 +25,15 @@ export default function Footer() {
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                  <rect x="0.5" y="0.5" width="4.5" height="4.5" fill="var(--bg)" />
-                  <rect x="7"   y="0.5" width="4.5" height="4.5" fill="var(--bg)" />
-                  <rect x="0.5" y="7"   width="4.5" height="4.5" fill="var(--bg)" />
-                  <rect x="7"   y="7"   width="4.5" height="4.5" fill="var(--bg)" />
+                  <rect x="0.5" y="0.5" width="4.5" height="4.5" fill="var(--bg)"/>
+                  <rect x="7"   y="0.5" width="4.5" height="4.5" fill="var(--bg)"/>
+                  <rect x="0.5" y="7"   width="4.5" height="4.5" fill="var(--bg)"/>
+                  <rect x="7"   y="7"   width="4.5" height="4.5" fill="var(--bg)"/>
                 </svg>
               </div>
               <span style={{
                 fontFamily: "var(--font-display)", fontWeight: 800,
-                fontSize: 16, color: "var(--text)", letterSpacing: "-0.02em",
+                fontSize: 17, color: "var(--text)", letterSpacing: "-0.02em",
               }}>
                 {COMPANY_NAME}
               </span>
@@ -52,17 +52,15 @@ export default function Footer() {
           {/* Link cols */}
           {FOOTER_COLS.map((col) => (
             <div key={col.title}>
-              <p className="text-label" style={{ marginBottom: 18, color: "var(--text)" }}>{col.title}</p>
+              <p className="text-label" style={{ marginBottom: 18, color: "var(--text-3)" }}>{col.title}</p>
               <nav style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                 {col.links.map(({ label, href }) => (
                   <Link key={label} href={href} style={{ textDecoration: "none" }}>
-                    <span
-                      style={{
-                        fontSize: 13, color: "var(--text-3)",
-                        transition: "color 0.18s", cursor: "pointer",
-                        display: "block",
-                      }}
-                      onMouseEnter={(e) => (e.target.style.color = "var(--text)")}
+                    <span style={{
+                      fontSize: 13, color: "var(--text-3)",
+                      transition: "color 0.18s", cursor: "pointer", display: "block",
+                    }}
+                      onMouseEnter={(e) => (e.target.style.color = "var(--text-2)")}
                       onMouseLeave={(e) => (e.target.style.color = "var(--text-3)")}
                     >
                       {label}
@@ -100,23 +98,17 @@ function SocialLinks() {
     { label: "in", href: "#" },
     { label: "gh", href: "#" },
   ];
-
   return (
     <div style={{ display: "flex", gap: 8 }}>
       {socials.map(({ label, href }) => (
-        <a
-          key={label}
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            width: 30, height: 30,
-            border: "1px solid var(--border)",
-            borderRadius: "var(--radius-sm)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, color: "var(--text-3)",
-            textDecoration: "none", transition: "all 0.18s",
-          }}
+        <a key={label} href={href} target="_blank" rel="noreferrer" style={{
+          width: 30, height: 30,
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-sm)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 11, color: "var(--text-3)",
+          textDecoration: "none", transition: "all 0.18s",
+        }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = "var(--border-hi)";
             e.currentTarget.style.color = "var(--text)";
@@ -136,7 +128,7 @@ function SocialLinks() {
 function StatusIndicator() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80" }} />
       <span className="text-label" style={{ fontSize: 10 }}>All systems operational</span>
     </div>
   );
