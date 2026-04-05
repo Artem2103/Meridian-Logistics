@@ -1,11 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Timeline — scroll-animated vertical timeline.
- * The white fill line advances as the user scrolls through the section.
- *
- * @param {{ items: { year: string, title: string, desc: string }[] }} props
- */
 export default function Timeline({ items }) {
   const containerRef = useRef(null);
   const [progress, setProgress] = useState(0);
@@ -29,29 +23,19 @@ export default function Timeline({ items }) {
 
   return (
     <div ref={containerRef} style={{ position: "relative", paddingLeft: 56 }}>
-      {/* ── Track ── */}
-      <div
-        style={{
-          position: "absolute",
-          left: 6,
-          top: 8,
-          bottom: 0,
-          width: 1,
-          background: "var(--border)",
-        }}
-      />
-      {/* ── Progress fill ── */}
-      <div
-        style={{
-          position: "absolute",
-          left: 6,
-          top: 8,
-          width: 1,
-          height: `${progress * 100}%`,
-          background: "#fff",
-          transition: "height 0.08s linear",
-        }}
-      />
+      {/* Track */}
+      <div style={{
+        position: "absolute", left: 6, top: 8, bottom: 0,
+        width: 1, background: "var(--border)",
+      }} />
+      {/* Progress fill */}
+      <div style={{
+        position: "absolute", left: 6, top: 8,
+        width: 1,
+        height: `${progress * 100}%`,
+        background: "var(--accent)",
+        transition: "height 0.08s linear",
+      }} />
 
       {items.map((item, i) => (
         <div
@@ -62,50 +46,38 @@ export default function Timeline({ items }) {
             gridTemplateColumns: "96px 1fr",
             gap: "0 40px",
             paddingBottom: i < items.length - 1 ? 72 : 0,
+            opacity: progress > (i / items.length) - 0.1 ? 1 : 0.35,
+            transition: "opacity 0.4s ease",
           }}
         >
           {/* Dot */}
-          <div
-            style={{
-              position: "absolute",
-              left: -50,
-              top: 10,
-              width: 13,
-              height: 13,
-              borderRadius: "50%",
-              background: progress > i / items.length ? "#fff" : "var(--bg)",
-              border: "1px solid var(--border-hi)",
-              transition: "background 0.35s ease",
-            }}
-          />
+          <div style={{
+            position: "absolute", left: -50, top: 10,
+            width: 13, height: 13, borderRadius: "50%",
+            background: progress > i / items.length ? "var(--accent)" : "var(--bg)",
+            border: `1px solid ${progress > i / items.length ? "var(--accent)" : "var(--border-hi)"}`,
+            transition: "all 0.35s ease",
+          }} />
 
           {/* Year */}
           <div>
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 28,
-                fontWeight: 700,
-                color: "var(--text-3)",
-                letterSpacing: "-0.02em",
-              }}
-            >
+            <span style={{
+              fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 700,
+              color: progress > i / items.length ? "var(--accent)" : "var(--text-3)",
+              letterSpacing: "-0.02em",
+              transition: "color 0.35s ease",
+            }}>
               {item.year}
             </span>
           </div>
 
           {/* Content */}
           <div>
-            <h3
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: 22,
-                fontWeight: 700,
-                letterSpacing: "-0.015em",
-                marginBottom: 12,
-                lineHeight: 1.2,
-              }}
-            >
+            <h3 style={{
+              fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700,
+              letterSpacing: "-0.015em", marginBottom: 12, lineHeight: 1.2,
+              color: "var(--text)",
+            }}>
               {item.title}
             </h3>
             <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.75 }}>
