@@ -113,7 +113,7 @@ export default function Header() {
             fontFamily: "var(--font-display)", fontWeight: 800,
             fontSize: 18, color: "var(--text)", letterSpacing: "-0.025em",
           }}>
-            Meridian
+            Koda
           </span>
         </Link>
 
