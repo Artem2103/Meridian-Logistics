@@ -26,16 +26,24 @@ export function WorldMap({
     [map]
   );
 
-  const projectPoint = (lat, lng) => ({
-    x: (lng + 180) * (800 / 360),
-    y: (90 - lat) * (400 / 180),
-  });
+  const projectPoint = (lat, lng) => ({ x: (lng + 180) * (800 / 360), y: (90 - lat) * (400 / 180) });
+  const createCurvedPath = (start, end) => `M ${start.x} ${start.y} Q ${(start.x + end.x) / 2} ${Math.min(start.y, end.y) - 50} ${end.x} ${end.y}`;
 
-  const createCurvedPath = (start, end) => {
-    const midX = (start.x + end.x) / 2;
-    const midY = Math.min(start.y, end.y) - 50;
-    return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
-  };
+  const routes = useMemo(
+    () =>
+      dots.map((dot, i) => {
+        const s = projectPoint(dot.start.lat, dot.start.lng);
+        const e = projectPoint(dot.end.lat, dot.end.lng);
+        return {
+          key: i,
+          dot,
+          start: s,
+          end: e,
+          pathD: createCurvedPath(s, e),
+        };
+      }),
+    [dots]
+  );
 
   const staggerDelay       = 0.3;
   const totalAnimationTime = dots.length * staggerDelay + animationDuration;
@@ -64,7 +72,7 @@ export function WorldMap({
         }}
         alt="world map"
         height={495} width={1056}
-        draggable={false} priority
+        draggable={false}
       />
 
       {/* Route SVG */}
@@ -92,10 +100,8 @@ export function WorldMap({
         </defs>
 
         {/* Animated paths */}
-        {dots.map((dot, i) => {
-          const s = projectPoint(dot.start.lat, dot.start.lng);
-          const e = projectPoint(dot.end.lat,   dot.end.lng);
-          const pathD     = createCurvedPath(s, e);
+        {routes.map((route, i) => {
+          const pathD = route.pathD;
           const startTime = (i * staggerDelay) / fullCycleDuration;
           const endTime   = (i * staggerDelay + animationDuration) / fullCycleDuration;
           const resetTime = totalAnimationTime / fullCycleDuration;
@@ -136,9 +142,10 @@ export function WorldMap({
         })}
 
         {/* Dots & labels */}
-        {dots.map((dot, i) => {
-          const s = projectPoint(dot.start.lat, dot.start.lng);
-          const e = projectPoint(dot.end.lat,   dot.end.lng);
+        {routes.map((route, i) => {
+          const s = route.start;
+          const e = route.end;
+          const dot = route.dot;
 
           return (
             <g key={`points-group-${i}`}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { NAV_LINKS, DEPARTMENT_LINKS } from "@/lib/constants";
@@ -26,9 +26,29 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    let rafId = 0;
+    let lastScrolled = false;
+
+    const commit = () => {
+      rafId = 0;
+      const next = window.scrollY > 12;
+      if (next !== lastScrolled) {
+        lastScrolled = next;
+        setScrolled(next);
+      }
+    };
+
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(commit);
+    };
+
+    commit();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Close dropdown on outside click
@@ -77,7 +97,7 @@ export default function Header() {
       backdropFilter: "blur(20px) saturate(180%)",
       WebkitBackdropFilter: "blur(20px) saturate(180%)",
       borderBottom: scrolled ? "1px solid var(--border)" : "1px solid var(--glass-border)",
-      transition: "all 0.3s ease",
+      transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
       boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
     }}>
       {/* ── Top bar ── */}
@@ -253,7 +273,7 @@ export default function Header() {
   );
 }
 
-function DeptIcon({ dept, active }) {
+const DeptIcon = memo(function DeptIcon({ dept, active }) {
   const color = active ? "var(--text)" : "var(--text-3)";
   const icons = {
     Logistics: (
@@ -279,9 +299,9 @@ function DeptIcon({ dept, active }) {
     ),
   };
   return icons[dept] || null;
-}
+});
 
-function LogoMark() {
+const LogoMark = memo(function LogoMark() {
   return (
     <div style={{
       width: 26, height: 26,
@@ -297,4 +317,4 @@ function LogoMark() {
       </svg>
     </div>
   );
-}
+});

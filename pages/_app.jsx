@@ -7,7 +7,7 @@ export default function App({ Component, pageProps }) {
       {/* Google Translate — must be loaded before the init callback */}
       <Script
         id="google-translate-init"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
         dangerouslySetInnerHTML={{
           __html: `
             function googleTranslateElementInit() {
@@ -25,8 +25,8 @@ export default function App({ Component, pageProps }) {
         }}
       />
       <Script
-        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-        strategy="afterInteractive"
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        strategy="lazyOnload"
       />
       {/* Hidden container — the GT widget binds here */}
       <div id="google_translate_element" />

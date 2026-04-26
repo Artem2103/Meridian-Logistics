@@ -49,6 +49,7 @@ export default function PageMediaBanner({
             muted
             loop
             playsInline
+            preload="metadata"
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%",
@@ -63,6 +64,8 @@ export default function PageMediaBanner({
           <img
             src={imageSrc}          /* ← your image URL goes here */
             alt={alt}
+            loading="lazy"
+            decoding="async"
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%",

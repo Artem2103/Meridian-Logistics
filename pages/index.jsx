@@ -4,19 +4,39 @@ import HeroSection from "@/components/sections/HeroSection";
 import CTASection from "@/components/sections/CTASection";
 import LogoMarquee from "@/components/ui/LogoMarquee";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 function Reveal({ children, delay = 0, y = 24 }) {
-  const reduceMotion = useReducedMotion();
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (visible || !ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [visible]);
+
   return (
-    <motion.div
-      initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y }}
-      whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: reduceMotion ? 0 : 0.6, ease: "easeOut", delay }}
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translate3d(0,0,0)" : `translate3d(0, ${y}px, 0)`,
+        transition: `transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s, opacity 0.55s ease ${delay}s`,
+        willChange: "transform, opacity",
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -82,7 +102,7 @@ function DepartmentStrip() {
   ];
 
   return (
-    <section style={{ borderBottom: "1px solid var(--border)", background: "var(--bg)" }}>
+    <section style={{ borderBottom: "1px solid var(--border)", background: "var(--bg)", contentVisibility: "auto", containIntrinsicSize: "800px" }}>
       <div style={{
         maxWidth: 1200, margin: "0 auto", padding: "0 28px",
         display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
@@ -130,6 +150,8 @@ function PlatformPreview() {
       padding: "100px 28px",
       borderBottom: "1px solid var(--border)",
       background: "var(--bg-1)",
+      contentVisibility: "auto",
+      containIntrinsicSize: "900px",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 72, alignItems: "center" }}>
@@ -273,6 +295,8 @@ function IntelligenceFeed() {
       background: "var(--bg)",
       borderTop: "1px solid var(--border)",
       borderBottom: "1px solid var(--border)",
+      contentVisibility: "auto",
+      containIntrinsicSize: "920px",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 72, alignItems: "center" }}>
@@ -368,6 +392,8 @@ function StatsBanner() {
       display: "grid",
       gridTemplateColumns: "repeat(4, 1fr)",
       background: "var(--bg-1)",
+      contentVisibility: "auto",
+      containIntrinsicSize: "320px",
     }}>
       {[
         { value: "500+",  label: "Companies served" },

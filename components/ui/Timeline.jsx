@@ -7,18 +7,34 @@ export default function Timeline({ items }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    let rafId = 0;
+    let lastProgress = -1;
 
     const update = () => {
       const rect = el.getBoundingClientRect();
       const start = rect.top - window.innerHeight * 0.75;
       const end   = rect.bottom - window.innerHeight * 0.25;
       const p     = Math.min(1, Math.max(0, -start / (end - start)));
-      setProgress(p);
+      if (Math.abs(p - lastProgress) > 0.01) {
+        lastProgress = p;
+        setProgress(p);
+      }
+      rafId = 0;
     };
 
-    window.addEventListener("scroll", update, { passive: true });
+    const onScrollOrResize = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize, { passive: true });
     update();
-    return () => window.removeEventListener("scroll", update);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
+      if (rafId) window.cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -32,9 +48,12 @@ export default function Timeline({ items }) {
       <div style={{
         position: "absolute", left: 6, top: 8,
         width: 1,
-        height: `${progress * 100}%`,
+        height: "calc(100% - 8px)",
         background: "var(--accent)",
-        transition: "height 0.08s linear",
+        transformOrigin: "top",
+        transform: `scaleY(${progress})`,
+        willChange: "transform",
+        transition: "transform 0.08s linear",
       }} />
 
       {items.map((item, i) => (

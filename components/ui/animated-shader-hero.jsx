@@ -61,9 +61,14 @@ void main(void) {
 
 const useShaderBackground = () => {
   const canvasRef = useRef(null);
+  const sectionRef = useRef(null);
   const animationFrameRef = useRef();
   const rendererRef = useRef(null);
   const pointersRef = useRef(null);
+  const isVisibleRef = useRef(true);
+  const isPageVisibleRef = useRef(true);
+  const reducedMotionRef = useRef(false);
+  const lastFrameTimeRef = useRef(0);
 
   class WebGLRenderer {
     constructor(canvas, scale) {
@@ -204,19 +209,43 @@ const useShaderBackground = () => {
 
   const loop = (now) => {
     if (!rendererRef.current || !pointersRef.current) return;
-    rendererRef.current.updateMouse(pointersRef.current.first);
-    rendererRef.current.updatePointerCount(pointersRef.current.count);
-    rendererRef.current.updatePointerCoords(pointersRef.current.coords);
-    rendererRef.current.updateMove(pointersRef.current.move);
-    rendererRef.current.render(now);
+    const canRender = isVisibleRef.current && isPageVisibleRef.current && !reducedMotionRef.current;
+    const elapsed = now - lastFrameTimeRef.current;
+    if (canRender && elapsed >= 33) {
+      lastFrameTimeRef.current = now;
+      rendererRef.current.updateMouse(pointersRef.current.first);
+      rendererRef.current.updatePointerCount(pointersRef.current.count);
+      rendererRef.current.updatePointerCoords(pointersRef.current.coords);
+      rendererRef.current.updateMove(pointersRef.current.move);
+      rendererRef.current.render(now);
+    }
     animationFrameRef.current = requestAnimationFrame(loop);
   };
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    reducedMotionRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotionRef.current) return;
     const canvas = canvasRef.current;
     let isMounted = true;
+
+    const onVisibilityChange = () => {
+      isPageVisibleRef.current = document.visibilityState === "visible";
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0, rootMargin: "120px" }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange, { passive: true });
+    onVisibilityChange();
+
     const startRenderer = () => {
       if (!isMounted) return;
       const dpr = Math.max(1, 0.5 * window.devicePixelRatio);
@@ -242,18 +271,21 @@ const useShaderBackground = () => {
       if ("cancelIdleCallback" in window) window.cancelIdleCallback(idleId);
       else clearTimeout(idleId);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      observer.disconnect();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       rendererRef.current?.reset();
     };
   }, []);
 
-  return canvasRef;
+  return { canvasRef, sectionRef };
 };
 
 export default function Hero({ trustBadge, headline, subtitle, buttons, className = "" }) {
-  const canvasRef = useShaderBackground();
+  const { canvasRef, sectionRef } = useShaderBackground();
   return (
     <section
+      ref={sectionRef}
       className={className}
       style={{
         position: "relative",
