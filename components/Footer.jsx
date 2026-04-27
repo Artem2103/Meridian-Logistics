@@ -94,7 +94,7 @@ export default function Footer() {
 
 function SocialLinks() {
   const socials = [
-    { label: "𝕏",  href: "#" },
+    { label: "𝕏",  href: "https://x.com/kodalabsss" },
     { label: "in", href: "#" },
     { label: "gh", href: "#" },
   ];
