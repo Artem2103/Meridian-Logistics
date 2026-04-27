@@ -292,7 +292,7 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady }) {
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/satellite-streets-v12",
+      style: "mapbox://styles/mapbox/light-v11",
       projection: "globe",
       center: [20, 15],
       zoom: 1.3,
@@ -305,12 +305,16 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady }) {
 
     map.on("load", () => {
       map.setFog({
-        color:            "rgb(6, 14, 30)",
-        "high-color":     "rgb(16, 44, 130)",
-        "horizon-blend":  0.06,
-        "space-color":    "rgb(2, 4, 18)",
-        "star-intensity": 0.92,
+        color:            "rgb(208, 236, 255)",
+        "high-color":     "rgb(166, 219, 255)",
+        "horizon-blend":  0.1,
+        "space-color":    "rgb(231, 245, 255)",
+        "star-intensity": 0,
       });
+      try {
+        map.setPaintProperty("water", "fill-color", "#35B8FF");
+        map.setPaintProperty("water", "fill-opacity", 0.95);
+      } catch {}
       mapRef.current = map;
       onReady?.();
     });
@@ -371,33 +375,31 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady }) {
         });
         map.addLayer({ id: glowId, type: "line", source: srcId, paint: {
           "line-color":   route.color,
-          "line-width":   isActive ? 12 : 6,
-          "line-opacity": isActive ? 0.18 : 0.05,
+          "line-width":   isActive ? 11 : 8,
+          "line-opacity": isActive ? 0.2 : 0.11,
           "line-blur":    6,
         }});
         map.addLayer({ id: lineId, type: "line", source: srcId, paint: {
           "line-color":     route.color,
-          "line-width":     isActive ? 2.5 : 1.2,
-          "line-opacity":   isActive ? 1 : 0.30,
+          "line-width":     isActive ? 3.4 : 2.3,
+          "line-opacity":   isActive ? 1 : 0.78,
           "line-dasharray": route.dashArray,
         }});
         sourcesRef.current.push(srcId);
         layersRef.current.push(glowId, lineId);
 
-        // Hub markers for active route
-        if (isActive) {
-          route.hubLabels.forEach(hubLabel => {
-            const hubKey = Object.keys(HUBS).find(k => HUBS[k].label === hubLabel);
-            if (!hubKey) return;
-            const el = document.createElement("div");
-            el.style.cssText = `width:8px;height:8px;border-radius:2px;background:${route.color};box-shadow:0 0 8px ${route.color};transform:rotate(45deg);`;
-            const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, closeOnClick: false })
-              .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#fff;background:rgba(5,10,20,0.95);padding:4px 10px;border-radius:3px;border:1px solid rgba(255,255,255,0.12);letter-spacing:0.06em;white-space:nowrap">${hubLabel}</div>`);
-            markersRef.current.push(
-              new mapboxgl.Marker({ element: el }).setLngLat(HUBS[hubKey].coords).setPopup(popup).addTo(map)
-            );
-          });
-        }
+        // Hub markers for all routes (selected route is emphasized)
+        route.hubLabels.forEach(hubLabel => {
+          const hubKey = Object.keys(HUBS).find(k => HUBS[k].label === hubLabel);
+          if (!hubKey) return;
+          const el = document.createElement("div");
+          el.style.cssText = `width:${isActive ? 10 : 8}px;height:${isActive ? 10 : 8}px;border-radius:2px;background:${route.color};opacity:${isActive ? 1 : 0.75};box-shadow:0 0 ${isActive ? 9 : 6}px ${route.color};transform:rotate(45deg);`;
+          const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, closeOnClick: false })
+            .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);letter-spacing:0.04em;white-space:nowrap">${hubLabel}</div>`);
+          markersRef.current.push(
+            new mapboxgl.Marker({ element: el }).setLngLat(HUBS[hubKey].coords).setPopup(popup).addTo(map)
+          );
+        });
       });
 
       // Origin marker
@@ -410,7 +412,7 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady }) {
         new mapboxgl.Marker({ element: mkEl("#00D4FF") })
           .setLngLat(od.coords)
           .setPopup(new mapboxgl.Popup({ offset: 14, closeButton: false }).setHTML(
-            `<div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#fff;background:rgba(5,10,20,0.95);padding:4px 10px;border-radius:3px;border:1px solid rgba(0,212,255,0.4);letter-spacing:0.06em;white-space:nowrap">◆ ${origin}</div>`
+            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(0,212,255,0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${origin}</div>`
           ))
           .addTo(map)
       );
@@ -418,7 +420,7 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady }) {
         new mapboxgl.Marker({ element: mkEl("#FF6B35") })
           .setLngLat(dd.coords)
           .setPopup(new mapboxgl.Popup({ offset: 14, closeButton: false }).setHTML(
-            `<div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#fff;background:rgba(5,10,20,0.95);padding:4px 10px;border-radius:3px;border:1px solid rgba(255,107,53,0.4);letter-spacing:0.06em;white-space:nowrap">◆ ${destination}</div>`
+            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(255,107,53,0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${destination}</div>`
           ))
           .addTo(map)
       );
@@ -493,16 +495,16 @@ export default function TerminalPage() {
         paddingTop: 96,
         display: "grid",
         gridTemplateColumns: "360px 1fr 340px",
-        background: "#050a12",
-        overflow: "hidden",
+        background: "#ffffff",
+        overflow: "auto",
       }}>
 
         {/* ══ LEFT: INPUT ══ */}
-        <aside style={{ borderRight: "1px solid #1a2a3a", display: "flex", flexDirection: "column", background: "rgba(5,10,20,0.98)", overflow: "hidden" }}>
+        <aside style={{ borderRight: "1px solid #d7dee7", display: "flex", flexDirection: "column", background: "#ffffff", overflow: "hidden" }}>
           <PanelHeader label="SHIPMENT DETAILS" right={
-            <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: mapReady ? "#A8FF3E" : "#1e3040", letterSpacing: "0.1em" }}>
-              {mapReady ? "● LIVE" : "○ INIT"}
-            </span>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: mapReady ? "#2f7a27" : "#6f7a85", letterSpacing: "0.08em" }}>
+                {mapReady ? "● LIVE" : "○ INIT"}
+              </span>
           } />
 
           <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 36px" }}>
@@ -541,7 +543,7 @@ export default function TerminalPage() {
 
             {origin && destination && origin === destination && (
               <div style={{ marginBottom: 16, padding: "8px 12px", background: "rgba(255,107,53,0.08)", border: "1px solid rgba(255,107,53,0.3)", borderRadius: 3 }}>
-                <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#FF6B35" }}>
+                <span style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#c94f28" }}>
                   Origin and destination must differ.
                 </span>
               </div>
@@ -559,7 +561,7 @@ export default function TerminalPage() {
                 borderRadius: 3,
                 cursor: canCalc && !loading ? "pointer" : "not-allowed",
                 fontFamily: "var(--font-display)",
-                fontSize: 12,
+                fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
@@ -569,8 +571,8 @@ export default function TerminalPage() {
               {loading ? "COMPUTING…" : "CALCULATE ROUTES →"}
             </button>
 
-            <div style={{ marginTop: 30, paddingTop: 22, borderTop: "1px solid #1a2a3a" }}>
-              <div style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#2a4050", letterSpacing: "0.18em", marginBottom: 16 }}>
+            <div style={{ marginTop: 30, paddingTop: 22, borderTop: "1px solid #d7dee7" }}>
+              <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#64707a", letterSpacing: "0.1em", marginBottom: 16 }}>
                 HOW THIS WORKS
               </div>
               {[
@@ -580,10 +582,10 @@ export default function TerminalPage() {
                 ["04", "Review ranked options",    "Routes scored by cost, speed, and compliance burden."],
               ].map(([n, t, d]) => (
                 <div key={n} style={{ display: "flex", gap: 14, marginBottom: 16 }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontSize: 11, color: "#1e3040", fontWeight: 700, flexShrink: 0, paddingTop: 1 }}>{n}</span>
+                  <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#5d6670", fontWeight: 700, flexShrink: 0, paddingTop: 1 }}>{n}</span>
                   <div>
-                    <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#7abacc", fontWeight: 500, marginBottom: 3 }}>{t}</div>
-                    <div style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "#2a4050", lineHeight: 1.6 }}>{d}</div>
+                    <div style={{ fontFamily: "var(--font-body)", fontSize: 14, color: "#1f2a35", fontWeight: 600, marginBottom: 3 }}>{t}</div>
+                    <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#46515c", lineHeight: 1.6 }}>{d}</div>
                   </div>
                 </div>
               ))}
@@ -604,14 +606,14 @@ export default function TerminalPage() {
           {/* Top-left HUD */}
           <div style={{
             position: "absolute", top: 16, left: 16,
-            background: "rgba(5,10,20,0.88)", border: "1px solid #1a2a3a",
+            background: "rgba(255,255,255,0.92)", border: "1px solid #d7dee7",
             borderRadius: 3, padding: "10px 16px", pointerEvents: "none",
             backdropFilter: "blur(8px)",
           }}>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 9, color: "#2a4050", letterSpacing: "0.2em", marginBottom: 4 }}>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#5d6771", letterSpacing: "0.12em", marginBottom: 4 }}>
               MERIDIAN · ROUTE TERMINAL
             </div>
-            <div style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "#00D4FF", letterSpacing: "0.08em" }}>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#007acc", letterSpacing: "0.04em" }}>
               {time}
             </div>
           </div>
@@ -620,7 +622,7 @@ export default function TerminalPage() {
           {calculated && (
             <div style={{
               position: "absolute", top: 16, right: 16,
-              background: "rgba(5,10,20,0.88)", border: "1px solid #1a2a3a",
+              background: "rgba(255,255,255,0.92)", border: "1px solid #d7dee7",
               borderRadius: 3, padding: "10px 14px", backdropFilter: "blur(8px)",
             }}>
               {routes.map((r, i) => (
@@ -631,12 +633,12 @@ export default function TerminalPage() {
                     display: "flex", alignItems: "center", gap: 8,
                     marginBottom: i < routes.length - 1 ? 8 : 0,
                     cursor: "pointer",
-                    opacity: activeRoute === i ? 1 : 0.4,
+                    opacity: activeRoute === i ? 1 : 0.75,
                     transition: "opacity 0.15s",
                   }}
                 >
                   <div style={{ width: 18, height: 2, background: r.color, borderRadius: 1, flexShrink: 0 }} />
-                  <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: r.color, letterSpacing: "0.08em" }}>
+                  <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: r.color, letterSpacing: "0.04em" }}>
                     ROUTE {i + 1} · {r.mode.replace("_", "+").toUpperCase()}
                   </span>
                 </div>
@@ -647,7 +649,7 @@ export default function TerminalPage() {
           {/* Bottom status bar */}
           <div style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
-            background: "rgba(5,10,20,0.92)", borderTop: "1px solid #1a2a3a",
+            background: "rgba(255,255,255,0.94)", borderTop: "1px solid #d7dee7",
             padding: "9px 20px", display: "flex", alignItems: "center", gap: 28,
             pointerEvents: "none", backdropFilter: "blur(8px)",
           }}>
@@ -658,8 +660,8 @@ export default function TerminalPage() {
               { k: "PORTS",     v: "3,200+" },
             ].map(({ k, v }) => (
               <div key={k} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <span style={{ fontFamily: "var(--font-body)", fontSize: 8, color: "#2a4050", letterSpacing: "0.16em" }}>{k}</span>
-                <span style={{ fontFamily: "var(--font-body)", fontSize: 8, color: "#00D4FF", letterSpacing: "0.1em" }}>{v}</span>
+                <span style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "#5f6c78", letterSpacing: "0.1em" }}>{k}</span>
+                <span style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "#007acc", letterSpacing: "0.06em" }}>{v}</span>
               </div>
             ))}
           </div>
@@ -668,11 +670,11 @@ export default function TerminalPage() {
           {loading && (
             <div style={{
               position: "absolute", inset: 0,
-              background: "rgba(5,10,20,0.5)",
+              background: "rgba(255,255,255,0.62)",
               display: "flex", flexDirection: "column",
               alignItems: "center", justifyContent: "center", gap: 16,
             }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 11, color: "#00D4FF", letterSpacing: "0.32em" }}>
+              <div style={{ fontFamily: "var(--font-body)", fontSize: 15, color: "#007acc", letterSpacing: "0.18em", fontWeight: 700 }}>
                 COMPUTING ROUTES
               </div>
               <div style={{ display: "flex", gap: 6 }}>
@@ -688,10 +690,10 @@ export default function TerminalPage() {
         </main>
 
         {/* ══ RIGHT: RESULTS ══ */}
-        <aside style={{ borderLeft: "1px solid #1a2a3a", display: "flex", flexDirection: "column", background: "rgba(5,10,20,0.98)", overflow: "hidden" }}>
+        <aside style={{ borderLeft: "1px solid #d7dee7", display: "flex", flexDirection: "column", background: "#ffffff", overflow: "hidden" }}>
           <PanelHeader label="ROUTE INTELLIGENCE" right={
             calculated
-              ? <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#A8FF3E", letterSpacing: "0.1em" }}>{routes.length} ROUTES</span>
+              ? <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "#2f7a27", letterSpacing: "0.08em" }}>{routes.length} ROUTES</span>
               : null
           } />
 
@@ -728,8 +730,8 @@ export default function TerminalPage() {
         }
         ::-webkit-scrollbar { width:2px; }
         ::-webkit-scrollbar-track { background:transparent; }
-        ::-webkit-scrollbar-thumb { background:#1a2a3a; border-radius:2px; }
-        select option { background:#050a12; color:#fff; }
+        ::-webkit-scrollbar-thumb { background:#c4ced8; border-radius:2px; }
+        select option { background:#ffffff; color:#111111; }
         .mapboxgl-popup-content {
           background:transparent !important;
           box-shadow:none !important;
@@ -737,12 +739,12 @@ export default function TerminalPage() {
         }
         .mapboxgl-popup-tip { display:none !important; }
         .mapboxgl-ctrl-group {
-          background:rgba(5,10,20,0.92) !important;
-          border:1px solid #1a2a3a !important;
+          background:rgba(255,255,255,0.95) !important;
+          border:1px solid #d7dee7 !important;
           border-radius:3px !important;
         }
         .mapboxgl-ctrl-group button { background:transparent !important; }
-        .mapboxgl-ctrl-icon { filter:invert(0.7) !important; }
+        .mapboxgl-ctrl-icon { filter:invert(0.15) !important; }
         .mapboxgl-ctrl-attrib { display:none !important; }
       `}</style>
     </>
@@ -755,11 +757,11 @@ function PanelHeader({ label, right }) {
   return (
     <div style={{
       padding: "12px 20px",
-      borderBottom: "1px solid #1a2a3a",
+      borderBottom: "1px solid #d7dee7",
       display: "flex", alignItems: "center", justifyContent: "space-between",
       flexShrink: 0,
     }}>
-      <span style={{ fontFamily: "var(--font-body)", fontSize: 9, letterSpacing: "0.2em", color: "#00D4FF", textTransform: "uppercase", fontWeight: 600 }}>
+      <span style={{ fontFamily: "var(--font-body)", fontSize: 12, letterSpacing: "0.12em", color: "#0f1720", textTransform: "uppercase", fontWeight: 700 }}>
         ◆ {label}
       </span>
       {right}
@@ -769,7 +771,7 @@ function PanelHeader({ label, right }) {
 
 function FieldLabel({ children }) {
   return (
-    <div style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#3a5060", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 8 }}>
+    <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#405160", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>
       {children}
     </div>
   );
@@ -780,10 +782,10 @@ function ProductBtn({ p, active, onClick }) {
     <button
       onClick={onClick}
       style={{
-        background: active ? "rgba(0,212,255,0.10)" : "rgba(255,255,255,0.02)",
-        border: `1px solid ${active ? "#00D4FF" : "#1a2a3a"}`,
+        background: active ? "rgba(0,122,204,0.10)" : "#ffffff",
+        border: `1px solid ${active ? "#007acc" : "#d7dee7"}`,
         borderRadius: 3,
-        padding: "8px 8px",
+        padding: "10px 10px",
         cursor: "pointer",
         display: "flex",
         alignItems: "center",
@@ -792,8 +794,8 @@ function ProductBtn({ p, active, onClick }) {
         textAlign: "left",
       }}
     >
-      <span style={{ fontSize: 13, lineHeight: 1 }}>{p.emoji}</span>
-      <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: active ? "#00D4FF" : "#5a7888", letterSpacing: "0.04em", lineHeight: 1.35 }}>
+      <span style={{ fontSize: 16, lineHeight: 1 }}>{p.emoji}</span>
+      <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: active ? "#007acc" : "#2a3540", letterSpacing: "0.02em", lineHeight: 1.35 }}>
         {p.label}
       </span>
     </button>
@@ -808,13 +810,13 @@ function TermInput({ style, onFocus, onBlur, ...props }) {
       onFocus={e => { setFocused(true); onFocus?.(e); }}
       onBlur={e => { setFocused(false); onBlur?.(e); }}
       style={{
-        background: "rgba(255,255,255,0.02)",
-        border: `1px solid ${focused ? "#00D4FF" : "#1a2a3a"}`,
+        background: "#ffffff",
+        border: `1px solid ${focused ? "#007acc" : "#d7dee7"}`,
         borderRadius: 3,
-        padding: "9px 12px",
-        color: "#fff",
+        padding: "11px 12px",
+        color: "#111",
         fontFamily: "var(--font-body)",
-        fontSize: 13,
+        fontSize: 16,
         width: "100%",
         outline: "none",
         transition: "border-color 0.15s",
@@ -829,18 +831,18 @@ function TermSelect({ children, style, ...props }) {
     <select
       {...props}
       style={{
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid #1a2a3a",
+        background: "#ffffff",
+        border: "1px solid #d7dee7",
         borderRadius: 3,
-        padding: "9px 28px 9px 12px",
-        color: "#fff",
+        padding: "11px 28px 11px 12px",
+        color: "#111",
         fontFamily: "var(--font-body)",
-        fontSize: 13,
+        fontSize: 16,
         width: "100%",
         outline: "none",
         cursor: "pointer",
         appearance: "none",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233a5060'/%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23607180'/%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 10px center",
         ...style,
@@ -857,9 +859,9 @@ function RouteCard({ route, idx, active, onClick }) {
     <div
       onClick={onClick}
       style={{
-        background: active ? `rgba(${hexRgb(route.color)},0.06)` : "rgba(255,255,255,0.015)",
-        border: `1px solid ${active ? route.color + "55" : "#1a2a3a"}`,
-        borderLeft: `3px solid ${active ? route.color : idx === 0 ? route.color + "55" : "#1a2a3a"}`,
+        background: active ? `rgba(${hexRgb(route.color)},0.08)` : "#ffffff",
+        border: `1px solid ${active ? route.color + "88" : "#d7dee7"}`,
+        borderLeft: `3px solid ${active ? route.color : idx === 0 ? route.color + "88" : "#d7dee7"}`,
         borderRadius: 3,
         padding: "14px",
         marginBottom: 10,
@@ -875,21 +877,21 @@ function RouteCard({ route, idx, active, onClick }) {
             border: `1px solid ${route.color}`,
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 8, color: route.color, fontWeight: 700 }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: 10, color: route.color, fontWeight: 700 }}>
               {idx + 1}
             </span>
           </div>
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 9, color: route.color, letterSpacing: "0.08em", fontWeight: 700, lineHeight: 1.3 }}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: route.color, letterSpacing: "0.04em", fontWeight: 700, lineHeight: 1.3 }}>
             {route.label.toUpperCase()}
           </span>
         </div>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: 11, color: scoreColor, fontWeight: 700, flexShrink: 0 }}>
+        <span style={{ fontFamily: "var(--font-body)", fontSize: 14, color: scoreColor, fontWeight: 700, flexShrink: 0 }}>
           {route.score}/100
         </span>
       </div>
 
       {/* Score bar */}
-      <div style={{ height: 2, background: "#0d1d2a", borderRadius: 1, marginBottom: 10 }}>
+      <div style={{ height: 3, background: "#e8edf2", borderRadius: 2, marginBottom: 10 }}>
         <div style={{ width: `${route.score}%`, height: "100%", background: route.color, borderRadius: 1 }} />
       </div>
 
@@ -900,9 +902,9 @@ function RouteCard({ route, idx, active, onClick }) {
           { k: "TRANSIT",  v: `${route.days}d` },
           { k: "DIST",     v: `${Math.round(route.distance / 100) / 10}k km` },
         ].map(({ k, v }) => (
-          <div key={k} style={{ background: "rgba(255,255,255,0.02)", padding: "6px 8px", borderRadius: 2 }}>
-            <div style={{ fontFamily: "var(--font-body)", fontSize: 7, color: "#2a4050", letterSpacing: "0.14em", marginBottom: 3 }}>{k}</div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 11, color: "#fff", fontWeight: 600 }}>{v}</div>
+          <div key={k} style={{ background: "#f9fbfd", padding: "7px 8px", borderRadius: 2, border: "1px solid #e8edf2" }}>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#536272", letterSpacing: "0.08em", marginBottom: 3 }}>{k}</div>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#111", fontWeight: 700 }}>{v}</div>
           </div>
         ))}
       </div>
@@ -910,8 +912,8 @@ function RouteCard({ route, idx, active, onClick }) {
       {/* Via hubs */}
       {route.hubLabels.length > 0 && (
         <div style={{ marginBottom: 8 }}>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 8, color: "#2a4050", letterSpacing: "0.12em" }}>VIA  </span>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#5a8898" }}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 10, color: "#536272", letterSpacing: "0.08em" }}>VIA  </span>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#1f2b36" }}>
             {route.hubLabels.join(" → ")}
           </span>
         </div>
@@ -929,7 +931,7 @@ function Tag({ color, children }) {
   return (
     <span style={{
       fontFamily: "var(--font-body)",
-      fontSize: 8, color,
+      fontSize: 10, color,
       padding: "3px 7px",
       background: `rgba(${hexRgb(color)},0.07)`,
       border: `1px solid rgba(${hexRgb(color)},0.25)`,
@@ -953,7 +955,7 @@ function EmptyState() {
         <line x1="1" y1="24" x2="47" y2="24" stroke="#1a2a3a" strokeWidth="0.8"/>
         <circle cx="24" cy="24" r="3" stroke="#2a4050" strokeWidth="1"/>
       </svg>
-      <div style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#2a4050", letterSpacing: "0.18em", textAlign: "center", lineHeight: 2.4 }}>
+      <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#536272", letterSpacing: "0.08em", textAlign: "center", lineHeight: 2.1 }}>
         SELECT CARGO TYPE<br />SET ORIGIN & DESTINATION<br />RUN ROUTE ANALYSIS
       </div>
     </div>
@@ -965,14 +967,14 @@ function SkeletonCards() {
     <div>
       {[1, 0.7, 0.4].map((opacity, i) => (
         <div key={i} style={{
-          border: "1px solid #1a2a3a", borderRadius: 3,
+          border: "1px solid #d7dee7", borderRadius: 3,
           padding: "16px", marginBottom: 10, opacity,
         }}>
-          <div style={{ width: "60%", height: 8, background: "#1a2a3a", borderRadius: 2, marginBottom: 10 }} />
-          <div style={{ height: 2, background: "#0d1d2a", marginBottom: 10 }} />
+          <div style={{ width: "60%", height: 8, background: "#d7dee7", borderRadius: 2, marginBottom: 10 }} />
+          <div style={{ height: 2, background: "#e8edf2", marginBottom: 10 }} />
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6 }}>
             {[0,1,2].map(j => (
-              <div key={j} style={{ height: 38, background: "#0d1d2a", borderRadius: 2 }} />
+              <div key={j} style={{ height: 38, background: "#f1f5f9", borderRadius: 2 }} />
             ))}
           </div>
         </div>
@@ -986,10 +988,10 @@ function SummaryPanel({ product, qty, unit, origin, destination, routes }) {
   return (
     <div style={{
       marginTop: 8, padding: "14px",
-      background: "rgba(0,212,255,0.03)",
-      border: "1px solid #1a2a3a", borderRadius: 3,
+      background: "rgba(53,184,255,0.07)",
+      border: "1px solid #d7dee7", borderRadius: 3,
     }}>
-      <div style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#2a4050", letterSpacing: "0.18em", marginBottom: 12 }}>
+      <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#536272", letterSpacing: "0.08em", marginBottom: 12 }}>
         CORRIDOR SUMMARY
       </div>
       {[
@@ -1002,8 +1004,8 @@ function SummaryPanel({ product, qty, unit, origin, destination, routes }) {
         ["EST. COST",    routes[0]?.cost],
       ].map(([k, v]) => (
         <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 7, gap: 12 }}>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#3a5060", letterSpacing: "0.1em", flexShrink: 0 }}>{k}</span>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 9, color: "#fff", textAlign: "right" }}>{v}</span>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "#405160", letterSpacing: "0.06em", flexShrink: 0 }}>{k}</span>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#111", textAlign: "right", fontWeight: 500 }}>{v}</span>
         </div>
       ))}
     </div>
