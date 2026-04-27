@@ -12,7 +12,7 @@ export default function SecuritiesPage() {
         <PageHero
           tag="Securities Module"
           heading={<>Risk seen before<br />it's felt.</>}
-          sub="Meridian Securities monitors sanctions lists, geopolitical signals, and corridor risk in real time — and tells you exactly what to do about it, before your shipment is in the air."
+          sub="Koda Securities monitors sanctions lists, geopolitical signals, and corridor risk in real time — and tells you exactly what to do about it, before your shipment is in the air."
           cta={{ label: "Start free trial", href: "/get-started" }}
           ctaSecondary={{ label: "Talk to sales", href: "/contact" }}
         />
@@ -28,7 +28,7 @@ export default function SecuritiesPage() {
                 <p className="text-body-lg" style={{ marginBottom: 24 }}>
                   Sanctions violations, cargo seizures, and force majeure events are rarely
                   surprises — they're predictable risks that weren't flagged in time.
-                  Meridian Securities changes that.
+                  Koda Securities changes that.
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-3)", lineHeight: 1.8 }}>
                   We screen every counterparty, every transit point, and every trade document
@@ -125,17 +125,17 @@ function RiskExamples() {
     {
       scenario: "Shipping electronics through Hong Kong to mainland China",
       risk: "Dual-use classification risk under US EAR. Export licence may be required.",
-      action: "Meridian flags the HS code, requests licence details, and suggests an alternative routing via Singapore with reduced scrutiny.",
+      action: "Koda flags the HS code, requests licence details, and suggests an alternative routing via Singapore with reduced scrutiny.",
     },
     {
       scenario: "Agricultural goods transiting a politically unstable corridor",
       risk: "Border closure risk rated 7.2/10. Phytosanitary certificate requirements have changed in the last 60 days.",
-      action: "Meridian recommends a southern corridor, updates document checklist, and alerts you to a new bilateral phytosanitary protocol.",
+      action: "Koda recommends a southern corridor, updates document checklist, and alerts you to a new bilateral phytosanitary protocol.",
     },
     {
       scenario: "Payment routed through a newly sanctioned intermediary bank",
       risk: "Counterparty added to OFAC SDN list 11 days ago. Transaction would constitute a sanctions violation.",
-      action: "Meridian flags the bank, freezes the recommendation, and suggests three compliant correspondent banking alternatives.",
+      action: "Koda flags the bank, freezes the recommendation, and suggests three compliant correspondent banking alternatives.",
     },
   ];
 
@@ -162,7 +162,7 @@ function RiskExamples() {
                 <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.risk}</p>
               </div>
               <div style={{ paddingLeft: 40 }}>
-                <p className="text-label" style={{ marginBottom: 10 }}>Meridian's action</p>
+                <p className="text-label" style={{ marginBottom: 10 }}>Koda's action</p>
                 <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.7 }}>{ex.action}</p>
               </div>
             </div>

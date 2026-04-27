@@ -12,7 +12,7 @@ export default function SystemsPage() {
         <PageHero
           tag="Systems Module"
           heading={<>Every cost,<br />before you commit.</>}
-          sub="Meridian Systems gives you a complete financial picture of any trade lane — duties, taxes, handling charges, FX exposure, and supplier benchmarks — before a single order is placed."
+          sub="Koda Systems gives you a complete financial picture of any trade lane — duties, taxes, handling charges, FX exposure, and supplier benchmarks — before a single order is placed."
           cta={{ label: "Start free trial", href: "/get-started" }}
           ctaSecondary={{ label: "Talk to sales", href: "/contact" }}
         />
@@ -30,7 +30,7 @@ export default function SystemsPage() {
                   customs brokerage, insurance, and currency shifts can add 20–60% to your landed cost.
                 </p>
                 <p style={{ fontSize: 13, color: "var(--text-3)", lineHeight: 1.8 }}>
-                  Meridian Systems calculates every layer before you sign anything — so you
+                  Koda Systems calculates every layer before you sign anything — so you
                   negotiate supplier prices knowing your real margin, not an estimate.
                 </p>
               </div>

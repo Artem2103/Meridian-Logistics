@@ -266,7 +266,7 @@ export default function TerminalPage() {
                 Calculate any<br />trade route.
               </h1>
               <p className="text-body-lg" style={{ color: "var(--text-2)", maxWidth: 400 }}>
-                Enter shipment details. Meridian evaluates every viable corridor,
+                Enter shipment details. Koda evaluates every viable corridor,
                 applies real-world distance data, filters country restrictions,
                 and ranks routes by cost, speed, and compliance risk.
               </p>

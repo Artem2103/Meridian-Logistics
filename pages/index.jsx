@@ -168,7 +168,7 @@ function PlatformPreview() {
               <Reveal delay={0.14}>
                 <p className="text-body-lg" style={{ marginBottom: 28 }}>
                   Enter origin, destination, commodity, and volume.
-                  Meridian returns ranked routes, full landed cost,
+                  Koda returns ranked routes, full landed cost,
                   and live risk flags in under 3 seconds.
                 </p>
               </Reveal>
@@ -208,7 +208,7 @@ function DashboardMockup() {
           <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c, opacity: 0.8 }} />
         ))}
         <span style={{ marginLeft: 8, fontFamily: "monospace", fontSize: 10, color: "var(--panel-text-3)", letterSpacing: "0.06em" }}>
-          meridian — route-intelligence
+          koda — route-intelligence
         </span>
       </div>
 

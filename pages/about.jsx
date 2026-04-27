@@ -17,7 +17,7 @@ export default function AboutPage() {
               Built by people who've<br />moved things.
             </h1>
             <p className="text-body-lg" style={{ maxWidth: 560 }}>
-              Meridian was founded in Hanoi in 2020 by a solo founder. Years watching cargo fail
+              Koda was founded in Hanoi in 2020 by a solo founder. Years watching cargo fail
               for predictable reasons — wrong routes, missed restrictions, unseen risk —
               led to building the tool people always needed.
             </p>

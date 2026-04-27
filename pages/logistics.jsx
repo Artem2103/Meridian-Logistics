@@ -13,7 +13,7 @@ export default function LogisticsPage() {
         <PageHero
           tag="Logistics Module"
           heading={<>Route intelligence<br />for the real world.</>}
-          sub="Meridian's route engine evaluates every viable path for your cargo — across modes, borders, and trade regimes — and ranks them by cost, speed, and risk. No guesswork."
+          sub="Koda's route engine evaluates every viable path for your cargo — across modes, borders, and trade regimes — and ranks them by cost, speed, and risk. No guesswork."
           cta={{ label: "Start free trial", href: "/get-started" }}
           ctaSecondary={{ label: "Talk to sales", href: "/contact" }}
         />
@@ -28,7 +28,7 @@ export default function LogisticsPage() {
                   Your cargo,<br />your rules.
                 </h2>
                 <p className="text-body-lg" style={{ marginBottom: 24 }}>
-                  Enter your product, origin, destination, and volume. Meridian cross-references
+                  Enter your product, origin, destination, and volume. Koda cross-references
                   commodity-specific trade rules, live port conditions, and carrier performance
                   to return ranked route options in seconds.
                 </p>

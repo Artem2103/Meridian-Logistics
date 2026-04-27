@@ -7,7 +7,7 @@ export default function LoginPage() {
       <Header />
       <AuthLayout
         eyebrow="Welcome back"
-        heading="Sign in to Meridian"
+        heading="Sign in to Koda"
         mode="login"
       />
     </>
