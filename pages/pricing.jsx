@@ -45,7 +45,7 @@ export default function PricingPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "1px solid var(--border)" }}>
             {PLANS.map((plan, i) => {
               const price = annual ? plan.annualPrice : plan.monthlyPrice;
-              const hl = plan.highlight;
+              const hl = false;
               return (
                 <div key={i} style={{
                   padding: "48px 36px",

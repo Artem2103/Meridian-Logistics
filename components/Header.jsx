@@ -1,29 +1,28 @@
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { NAV_LINKS, DEPARTMENT_LINKS } from "@/lib/constants";
-
-const LANGUAGES = [
-  { code: "nl", flag: "🇳🇱", name: "Dutch" },
-  { code: "fr", flag: "🇫🇷", name: "French" },
-  { code: "de", flag: "🇩🇪", name: "German" },
-  { code: "es", flag: "🇪🇸", name: "Spanish" },
-  { code: "zh-CN", flag: "🇨🇳", name: "Chinese" },
-  { code: "ar", flag: "🇸🇦", name: "Arabic" },
-  { code: "ja", flag: "🇯🇵", name: "Japanese" },
-  { code: "ko", flag: "🇰🇷", name: "Korean" },
-  { code: "pt", flag: "🇧🇷", name: "Portuguese" },
-  { code: "ru", flag: "🇷🇺", name: "Russian" },
-  { code: "hi", flag: "🇮🇳", name: "Hindi" },
-  { code: "tr", flag: "🇹🇷", name: "Turkish" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [showLang, setShowLang] = useState(false);
-  const [activeLang, setActiveLang] = useState(null);
-  const langRef = useRef(null);
+  const { lang, setLang } = useLanguage();
   const router = useRouter();
+
+  const applyTranslation = (langCode, attempts = 20) => {
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      if (select.value !== langCode) {
+        select.value = langCode;
+        select.dispatchEvent(new Event("change"));
+      }
+      return true;
+    }
+
+    if (attempts <= 0) return false;
+    window.setTimeout(() => applyTranslation(langCode, attempts - 1), 150);
+    return false;
+  };
 
   useEffect(() => {
     let rafId = 0;
@@ -51,40 +50,7 @@ export default function Header() {
     };
   }, []);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = (e) => {
-      if (langRef.current && !langRef.current.contains(e.target)) {
-        setShowLang(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const handleTranslate = (lang) => {
-    setActiveLang(lang);
-    setShowLang(false);
-    // Trigger Google Translate via the select element the widget injects
-    const select = document.querySelector(".goog-te-combo");
-    if (select) {
-      select.value = lang.code;
-      select.dispatchEvent(new Event("change"));
-    } else {
-      // Fallback: open in Google Translate frame
-      const url = `https://translate.google.com/translate?sl=auto&tl=${lang.code}&u=${encodeURIComponent(window.location.href)}`;
-      window.location.href = url;
-    }
-  };
-
-  const handleResetTranslation = () => {
-    setActiveLang(null);
-    const select = document.querySelector(".goog-te-combo");
-    if (select) {
-      select.value = "en";
-      select.dispatchEvent(new Event("change"));
-    }
-  };
+  const isEnglish = lang === "en";
 
   return (
     <header style={{
@@ -142,17 +108,25 @@ export default function Header() {
 
         {/* Right: translate + auth */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {/* Translate button */}
-          <div ref={langRef} style={{ position: "relative" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-sm)",
+              padding: 2,
+            }}
+          >
             <button
-              onClick={() => setShowLang(!showLang)}
+              onClick={() => setLang("en")}
               style={{
                 display: "flex", alignItems: "center", gap: 6,
-                background: activeLang ? "var(--text)" : "transparent",
-                color: activeLang ? "var(--bg)" : "var(--text-3)",
-                border: `1px solid ${activeLang ? "var(--text)" : "var(--border)"}`,
+                background: isEnglish ? "var(--text)" : "transparent",
+                color: isEnglish ? "var(--bg)" : "var(--text-3)",
+                border: "none",
                 borderRadius: "var(--radius-sm)",
-                padding: "5px 10px 5px 8px",
+                padding: "5px 10px",
                 cursor: "pointer",
                 fontFamily: "var(--font-body)",
                 fontSize: 11, fontWeight: 600,
@@ -161,50 +135,43 @@ export default function Header() {
                 transition: "all 0.18s",
               }}
               onMouseEnter={(e) => {
-                if (!activeLang) {
-                  e.currentTarget.style.borderColor = "var(--border-hi)";
+                if (!isEnglish) {
                   e.currentTarget.style.color = "var(--text-2)";
                 }
               }}
               onMouseLeave={(e) => {
-                if (!activeLang) {
-                  e.currentTarget.style.borderColor = "var(--border)";
+                if (!isEnglish) {
                   e.currentTarget.style.color = "var(--text-3)";
                 }
               }}
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.1"/>
-                <path d="M6 1C6 1 4 3.5 4 6s2 5 2 5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
-                <path d="M6 1s2 2.5 2 5-2 5-2 5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
-                <path d="M1.5 4.5h9M1.5 7.5h9" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
-              </svg>
-              {activeLang ? activeLang.flag : "Translate"}
-              {activeLang && (
-                <span
-                  onClick={(e) => { e.stopPropagation(); handleResetTranslation(); }}
-                  style={{ marginLeft: 2, opacity: 0.7, cursor: "pointer" }}
-                >×</span>
-              )}
+              EN
             </button>
-
-            {showLang && (
-              <div className="lang-dropdown">
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    className="lang-item"
-                    onClick={() => handleTranslate(lang)}
-                  >
-                    <span style={{ fontSize: 16 }}>{lang.flag}</span>
-                    <span>{lang.name}</span>
-                    {activeLang?.code === lang.code && (
-                      <span style={{ marginLeft: "auto", color: "var(--text)", fontSize: 10 }}>✓</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
+            <button
+              onClick={() => setLang("ru")}
+              style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: !isEnglish ? "var(--text)" : "transparent",
+                color: !isEnglish ? "var(--bg)" : "var(--text-3)",
+                border: "none",
+                borderRadius: "var(--radius-sm)",
+                padding: "5px 10px",
+                cursor: "pointer",
+                fontFamily: "var(--font-body)",
+                fontSize: 11, fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                transition: "all 0.18s",
+              }}
+              onMouseEnter={(e) => {
+                if (isEnglish) e.currentTarget.style.color = "var(--text-2)";
+              }}
+              onMouseLeave={(e) => {
+                if (isEnglish) e.currentTarget.style.color = "var(--text-3)";
+              }}
+            >
+              RU
+            </button>
           </div>
 
           <Link href="/login" style={{ textDecoration: "none" }}>

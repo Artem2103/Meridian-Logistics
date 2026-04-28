@@ -1,22 +1,19 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ThemeContext = createContext({
-  theme: "light",
-  isDark: false,
+  theme: "dark",
+  isDark: true,
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("koda-theme") : null;
     if (stored === "dark" || stored === "light") {
       setTheme(stored);
       return;
-    }
-    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
     }
   }, []);
 
