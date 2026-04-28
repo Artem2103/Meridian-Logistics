@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { origin, destination, product, quantity = 1000 } = req.body ?? {};
+  const { origin, destination, product, quantity = 1000, quantityUnit = "kg" } = req.body ?? {};
 
   if (!origin || !destination || !product) {
     return res.status(400).json({ error: "origin, destination and product are required" });
@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     destination,
     product,
     quantity: Number(quantity),
+    quantityUnit,
   });
 
   if (result?.error) {

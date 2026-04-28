@@ -4,6 +4,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Header from "@/components/Header";
 import { useTheme } from "@/contexts/ThemeContext";
+import { COUNTRIES as COUNTRY_DB } from "@/lib/Traderules";
 
 // ─── ROUTE COLORS ─────────────────────────────────────────────────────────────
 const ROUTE_COLORS = ["#005BFF", "#FF0000", "#00FF00"];
@@ -25,6 +26,36 @@ const PRODUCTS = [
 ];
 
 const UNITS = ["tonnes","kg","units","pallets","containers (20ft)","containers (40ft)","litres"];
+
+
+const COUNTRY_NAME_TO_CODE = Object.fromEntries(
+  Object.entries(COUNTRY_DB).map(([code, meta]) => [meta.name, code])
+);
+
+function toTerminalRoutes(apiRoutes = []) {
+  return apiRoutes.slice(0, 3).map((route, i) => {
+    const hubLabels = (route.waypoints || [])
+      .filter((wp) => wp.nodeType !== "country")
+      .map((wp) => wp.name);
+
+    return {
+      rank: i + 1,
+      color: ROUTE_COLORS[i] || ROUTE_COLORS[0],
+      label: route.label,
+      mode: route.mode,
+      waypoints: (route.waypoints || []).map((wp) => [wp.lng, wp.lat]),
+      waypointNodes: route.waypoints || [],
+      hubLabels,
+      distance: route.distanceKm,
+      days: route.days?.[0] ?? 0,
+      cost: `$${Number(route.estimatedCostUSD || 0).toLocaleString()}`,
+      score: Math.round(route.score || 0),
+      note: route.riskBand ? `Risk: ${route.riskBand}` : "",
+      warnings: route.warnings || [],
+      requirements: route.requirements || [],
+    };
+  });
+}
 
 const THEMES = {
   light: {
@@ -467,14 +498,15 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady, isDark
       clearAll();
       if (!routes.length || !origin || !destination) return;
 
-      const od = COUNTRY_DATA[origin];
-      const dd = COUNTRY_DATA[destination];
-      if (!od || !dd) return;
+      const activeRoute = routes[activeRouteIdx] || routes[0];
+      const startPoint = activeRoute?.waypoints?.[0];
+      const endPoint = activeRoute?.waypoints?.[(activeRoute?.waypoints?.length || 1) - 1];
+      if (!startPoint || !endPoint) return;
 
       // Fly to midpoint
-      const midLng = (od.coords[0] + dd.coords[0]) / 2;
-      const midLat = (od.coords[1] + dd.coords[1]) / 2;
-      const d = dist(od.coords, dd.coords);
+      const midLng = (startPoint[0] + endPoint[0]) / 2;
+      const midLat = (startPoint[1] + endPoint[1]) / 2;
+      const d = dist(startPoint, endPoint);
       const zoom = d > 8000 ? 1.4 : d > 4000 ? 1.9 : d > 2000 ? 2.6 : 3.2;
       map.flyTo({ center: [midLng, midLat], zoom, duration: 2000, essential: true });
 
@@ -491,9 +523,9 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady, isDark
           data: { type: "Feature", geometry: { type: "LineString", coordinates: lineCoords } },
         });
         map.addLayer({ id: glowId, type: "line", source: srcId, paint: {
-          "line-color":   route.color,
+          "line-color":   brightenHex(route.color, isActive ? 1.28 : 1),
           "line-width":   isActive ? 11 : 8,
-          "line-opacity": isActive ? 0.2 : 0.11,
+          "line-opacity": isActive ? 0.22 : 0.11,
           "line-blur":    6,
         }});
         const casingId = `rcasing-${ri}`;
@@ -503,47 +535,46 @@ function GlobeMap({ origin, destination, routes, activeRouteIdx, onReady, isDark
           "line-opacity": 0.55,
         }});
         map.addLayer({ id: lineId, type: "line", source: srcId, paint: {
-          "line-color":     route.color,
-          "line-width":     isActive ? 3.4 : 2.3,
-          "line-opacity":   isActive ? 1 : 0.9,
-          "line-dasharray": route.dashArray,
+          "line-color":   brightenHex(route.color, isActive ? 1.22 : 1),
+          "line-width":   isActive ? 3.6 : 2.5,
+          "line-opacity": isActive ? 1 : 0.9,
         }});
         sourcesRef.current.push(srcId);
         layersRef.current.push(glowId, lineId, casingId);
 
-        // Hub markers for all routes (selected route is emphasized)
-        route.hubLabels.forEach(hubLabel => {
-          const hubKey = Object.keys(HUBS).find(k => HUBS[k].label === hubLabel);
-          if (!hubKey) return;
+        // Node markers use exact waypoint coordinates so edges pass through nodes.
+        (route.waypointNodes || []).forEach((node, ni, nodes) => {
+          if (node.nodeType === "country") return;
           const el = document.createElement("div");
           el.style.cssText = `width:${isActive ? 10 : 8}px;height:${isActive ? 10 : 8}px;border-radius:2px;background:${route.color};opacity:${isActive ? 1 : 0.75};box-shadow:0 0 ${isActive ? 9 : 6}px ${route.color};transform:rotate(45deg);`;
           const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, closeOnClick: false })
-            .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);letter-spacing:0.04em;white-space:nowrap">${hubLabel}</div>`);
+            .setHTML(`<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);letter-spacing:0.04em;white-space:nowrap">${node.name}</div>`);
           markersRef.current.push(
-            new mapboxgl.Marker({ element: el }).setLngLat(HUBS[hubKey].coords).setPopup(popup).addTo(map)
+            new mapboxgl.Marker({ element: el }).setLngLat([node.lng, node.lat]).setPopup(popup).addTo(map)
           );
         });
       });
 
-      // Origin marker
+      // Start/end markers use one unique color per active route (no fixed orange).
+      const endpointColor = brightenHex(activeRoute.color || "#005BFF", 1.32);
       const mkEl = (color) => {
         const el = document.createElement("div");
-        el.style.cssText = `width:12px;height:12px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.7);box-shadow:0 0 0 4px rgba(${hexRgb(color)},0.2),0 0 18px ${color};`;
+        el.style.cssText = `width:12px;height:12px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.75);box-shadow:0 0 0 4px rgba(${hexRgb(color)},0.22),0 0 18px ${color};`;
         return el;
       };
       markersRef.current.push(
-        new mapboxgl.Marker({ element: mkEl("#00D4FF") })
-          .setLngLat(od.coords)
+        new mapboxgl.Marker({ element: mkEl(endpointColor) })
+          .setLngLat(startPoint)
           .setPopup(new mapboxgl.Popup({ offset: 14, closeButton: false }).setHTML(
-            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(0,212,255,0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${origin}</div>`
+            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(${hexRgb(endpointColor)},0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${origin} (fixed)</div>`
           ))
           .addTo(map)
       );
       markersRef.current.push(
-        new mapboxgl.Marker({ element: mkEl("#FF6B35") })
-          .setLngLat(dd.coords)
+        new mapboxgl.Marker({ element: mkEl(endpointColor) })
+          .setLngLat(endPoint)
           .setPopup(new mapboxgl.Popup({ offset: 14, closeButton: false }).setHTML(
-            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(255,107,53,0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${destination}</div>`
+            `<div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#111;background:rgba(255,255,255,0.96);padding:5px 10px;border-radius:4px;border:1px solid rgba(${hexRgb(endpointColor)},0.45);letter-spacing:0.04em;white-space:nowrap">◆ ${destination} (fixed)</div>`
           ))
           .addTo(map)
       );
@@ -595,18 +626,42 @@ export default function TerminalPage() {
 
   const canCalc = product && qty && parseFloat(qty) > 0 && origin && destination && origin !== destination;
 
-  const handleCalc = () => {
+  const handleCalc = async () => {
     if (!canCalc || loading) return;
+
+    const originCode = COUNTRY_NAME_TO_CODE[origin];
+    const destinationCode = COUNTRY_NAME_TO_CODE[destination];
+    if (!originCode || !destinationCode) return;
+
     setLoading(true);
     setRoutes([]);
     setCalculated(false);
-    setTimeout(() => {
-      const r = buildRoutes(origin, destination, product, qty, unit);
-      setRoutes(r);
-      setLoading(false);
+
+    try {
+      const response = await fetch("/api/routes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          origin: originCode,
+          destination: destinationCode,
+          product,
+          quantity: Number(qty),
+          quantityUnit: unit,
+        }),
+      });
+
+      const payload = await response.json();
+      const terminalRoutes = toTerminalRoutes(payload.routes || []);
+      setRoutes(terminalRoutes);
       setCalculated(true);
       setActiveRoute(0);
-    }, 1200);
+    } catch (error) {
+      console.error("Route calculation failed", error);
+      setRoutes([]);
+      setCalculated(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1152,3 +1207,12 @@ function hexRgb(hex) {
     parseInt(hex.slice(5, 7), 16),
   ].join(",");
 }
+
+function brightenHex(hex, factor = 1.15) {
+  const [r, g, b] = hexRgb(hex).split(",").map(Number);
+  const br = Math.min(255, Math.round(r * factor));
+  const bg = Math.min(255, Math.round(g * factor));
+  const bb = Math.min(255, Math.round(b * factor));
+  return `#${[br, bg, bb].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+

@@ -1,0 +1,35 @@
+code,name,country,lat,lon,port_type,congestion,handling_fee,region
+NLRTM,Rotterdam,Netherlands,51.95,4.14,deep_sea,1.10,450,Europe
+BEANR,Antwerp-Bruges,Belgium,51.26,4.40,deep_sea,1.08,430,Europe
+DEHAM,Hamburg,Germany,53.54,9.99,deep_sea,1.12,420,Europe
+ESALG,Algeciras,Spain,36.13,-5.45,transshipment,1.05,390,Europe
+ITGOA,Genoa,Italy,44.40,8.93,feeder,1.07,370,Europe
+TRIST,Istanbul Ambarli,Turkey,40.97,28.68,deep_sea,1.15,360,Europe
+EGSUZ,Suez,Egypt,29.97,32.55,chokepoint,1.20,500,Middle East
+AEDXB,Jebel Ali,UAE,25.01,55.06,deep_sea,1.14,440,Middle East
+OMSLL,Salalah,Oman,16.95,54.00,transshipment,1.06,380,Middle East
+SADMM,Dammam,Saudi Arabia,26.43,50.10,deep_sea,1.11,410,Middle East
+INNSA,Nhava Sheva,India,18.95,72.95,deep_sea,1.13,360,Asia
+LKCMB,Colombo,Sri Lanka,6.93,79.86,transshipment,1.09,340,Asia
+SGSIN,Singapore,Singapore,1.26,103.84,mega_hub,1.16,470,Asia
+MYPKG,Port Klang,Malaysia,3.00,101.39,deep_sea,1.08,330,Asia
+THLCH,Laem Chabang,Thailand,13.08,100.88,deep_sea,1.07,320,Asia
+VNSGN,Ho Chi Minh City,Vietnam,10.77,106.70,deep_sea,1.10,310,Asia
+HKHKG,Hong Kong,Hong Kong,22.31,114.17,mega_hub,1.12,460,Asia
+CNSHA,Shanghai,China,31.23,121.49,mega_hub,1.18,520,Asia
+CNNGB,Ningbo-Zhoushan,China,29.94,121.89,mega_hub,1.14,500,Asia
+KRPUS,Busan,South Korea,35.10,129.04,mega_hub,1.10,430,Asia
+JPYOK,Yokohama,Japan,35.44,139.64,deep_sea,1.09,410,Asia
+ZADUR,Durban,South Africa,-29.87,31.05,deep_sea,1.08,350,Africa
+MAPTM,Tangier Med,Morocco,35.89,-5.50,transshipment,1.06,340,Africa
+NGAPP,"Apapa, Lagos",Nigeria,6.45,3.39,deep_sea,1.22,330,Africa
+BRSSZ,Santos,Brazil,-23.96,-46.33,deep_sea,1.11,360,Americas
+MXVER,Veracruz,Mexico,19.20,-96.13,deep_sea,1.08,310,Americas
+USLAX,Los Angeles,United States,33.74,-118.26,mega_hub,1.17,490,Americas
+USLGB,Long Beach,United States,33.75,-118.21,mega_hub,1.16,470,Americas
+USNYC,New York/New Jersey,United States,40.68,-74.04,mega_hub,1.13,460,Americas
+USSAV,Savannah,United States,32.08,-81.09,deep_sea,1.09,350,Americas
+PAONX,Colon Panama,Panama,9.35,-79.90,chokepoint,1.10,420,Americas
+AUSYD,Sydney,Australia,-33.86,151.20,deep_sea,1.07,370,Oceania
+AUMEL,Melbourne,Australia,-37.81,144.96,deep_sea,1.06,360,Oceania
+NZAKL,Auckland,New Zealand,-36.85,174.76,deep_sea,1.05,340,Oceania
